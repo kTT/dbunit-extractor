@@ -1,0 +1,46 @@
+<idea-plugin version="2">
+  <id>li.ktt</id>
+  <name>DbUnit Extractor</name>
+  <version>0.1</version>
+  <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
+
+  <description><![CDATA[
+      DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      0.1 - initial version
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="131"/>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <depends>com.intellij.database</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="CopyToDbUnit" class="li.ktt.CopyToDbUnit" text="Copy to clipboard as DbUnit XML"
+      description="Copy selected rows to DbUnit xml format">
+      <add-to-group group-id="Console.TableResult.PopupGroup" anchor="last" />
+    </action>
+  </actions>
+
+</idea-plugin>
