@@ -19,7 +19,7 @@ public class CopyToDbUnit extends AnAction {
             final List<DataConsumer.Row> rows = getSelectedRows(dataGrid);
             final List<DataConsumer.Column> columns = getSelectedColumns(dataGrid);
 
-            final String tableName = getTableName(columns);
+            final String tableName = getTableName(dataGrid, columns);
 
             StringBuilder builder = new StringBuilder();
             for (final DataConsumer.Row row : rows) {
@@ -38,8 +38,13 @@ public class CopyToDbUnit extends AnAction {
     }
 
     @Nullable
-    private String getTableName(@NotNull final List<DataConsumer.Column> columns) {
-        return columns.isEmpty() ? null : columns.get(0).table;
+    private String getTableName(final DataGrid dataGrid,
+                                @NotNull final List<DataConsumer.Column> columns) {
+        String name = columns.isEmpty() ? null : columns.get(0).table;
+        if ((name == null || name.isEmpty()) && dataGrid.getDatabaseTable() != null) {
+            return dataGrid.getDatabaseTable().getName();
+        }
+        return name;
     }
 
     @NotNull
