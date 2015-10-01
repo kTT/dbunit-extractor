@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>0.2</version>
+  <version>0.3</version>
   <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      0.3 - adds skip null, skip empty value and exclude columns patterns<br />
       0.2 - fixes table name on jTds connection <br />
       0.1 - initial version
     ]]>
@@ -25,7 +26,7 @@
   <depends>com.intellij.database</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <projectConfigurable instance="li.ktt.settings.ProjectSettingsPage" />
   </extensions>
 
   <application-components>
