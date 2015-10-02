@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.TextTransferable;
 import li.ktt.settings.ProjectSettings;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,18 +23,21 @@ public class CopyToDbUnit extends AnAction {
 
         DataGrid dataGrid = DatabaseDataKeys.DATA_GRID_KEY.getData(e.getDataContext());
         if (dataGrid != null) {
-            final List<DataConsumer.Row> rows = getSelectedRows(dataGrid);
-            List<DataConsumer.Column> columns = getSelectedColumns(dataGrid);
+            DataGridHelper dataGridHelper = new DataGridHelper(dataGrid);
 
-            final String tableName = getTableName(dataGrid, columns);
+            final List<DataConsumer.Row> rows = dataGridHelper.getSelectedRows();
+            final List<DataConsumer.Column> columns = dataGridHelper.getSelectedColumns();
+
+            final String tableName = dataGridHelper.getTableName();
+            final String schemaName = dataGridHelper.getSchemaName();
 
             List<Pattern> patterns = getPatterns(project);
 
-            columns = filterColumns(patterns, tableName, columns);
+            final List<DataConsumer.Column> filteredColumns = filterColumns(patterns, tableName, columns);
 
             StringBuilder builder = new StringBuilder();
             for (final DataConsumer.Row row : rows) {
-                addRow(project, columns, tableName, builder, row);
+                addRow(project, filteredColumns, tableName, schemaName, builder, row);
             }
             CopyPasteManager.getInstance().setContents(new TextTransferable(builder.toString()));
         }
@@ -73,9 +75,14 @@ public class CopyToDbUnit extends AnAction {
     private void addRow(final Project project,
                         final List<DataConsumer.Column> columns,
                         final String tableName,
+                        final String schemaName,
                         final StringBuilder builder,
                         final DataConsumer.Row row) {
-        builder.append("<").append(tableName).append(" ");
+        builder.append("<");
+        if (ProjectSettings.isIncludeSchemaEnabled(project)) {
+            builder.append(schemaName).append(".");
+        }
+        builder.append(tableName).append(" ");
 
         for (final DataConsumer.Column column : columns) {
             addField(project, builder, row, column);
@@ -89,8 +96,7 @@ public class CopyToDbUnit extends AnAction {
                           final DataConsumer.Column column) {
         final Object columnValue = row.values[column.columnNum];
         if (notNullOrNullAllowed(project, columnValue) && notEmptyOrEmptyAllowed(project, columnValue)) {
-            builder.append(column.name)
-                   .append("=\"");
+            builder.append(column.name).append("=\"");
             if (columnValue != null) {
                 builder.append(columnValue);
             }
@@ -104,25 +110,5 @@ public class CopyToDbUnit extends AnAction {
 
     private boolean notNullOrNullAllowed(final Project project, final Object columnValue) {
         return columnValue != null || !ProjectSettings.isSkipNullEnabled(project);
-    }
-
-    @Nullable
-    private String getTableName(final DataGrid dataGrid,
-                                @NotNull final List<DataConsumer.Column> columns) {
-        String name = columns.isEmpty() ? null : columns.get(0).table;
-        if ((name == null || name.isEmpty()) && dataGrid.getDatabaseTable() != null) {
-            return dataGrid.getDatabaseTable().getName();
-        }
-        return name;
-    }
-
-    @NotNull
-    private List<DataConsumer.Column> getSelectedColumns(@NotNull final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getColumns(dataGrid.getSelectionModel().getSelectedColumns());
-    }
-
-    @NotNull
-    private List<DataConsumer.Row> getSelectedRows(@NotNull final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getRows(dataGrid.getSelectionModel().getSelectedRows());
     }
 }

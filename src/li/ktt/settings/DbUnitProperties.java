@@ -3,6 +3,7 @@ package li.ktt.settings;
 public class DbUnitProperties {
     private Boolean skipNull;
     private Boolean skipEmpty;
+    private Boolean includeSchema;
     private String excludeColumns;
 
     public Boolean getSkipNull() {
@@ -27,5 +28,13 @@ public class DbUnitProperties {
 
     public void setExcludeColumns(final String excludeColumns) {
         this.excludeColumns = excludeColumns;
+    }
+
+    public Boolean getIncludeSchema() {
+        return includeSchema;
+    }
+
+    public void setIncludeSchema(final Boolean includeSchema) {
+        this.includeSchema = includeSchema;
     }
 }
