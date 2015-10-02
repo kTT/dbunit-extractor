@@ -13,6 +13,7 @@ import javax.swing.*;
 public class ProjectSettingsPage implements SearchableConfigurable, Configurable.NoScroll {
     private JCheckBox skipNullValues;
     private JCheckBox skipEmptyValues;
+    private JCheckBox includeSchema;
     private JTextArea excludedColumns;
     private JPanel panel;
 
@@ -51,6 +52,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     public JComponent createComponent() {
         skipNullValues.setSelected(ProjectSettings.isSkipNullEnabled(project));
         skipEmptyValues.setSelected(ProjectSettings.isSkipEmptyEnabled(project));
+        includeSchema.setSelected(ProjectSettings.isIncludeSchemaEnabled(project));
         excludedColumns.setText(ProjectSettings.getExcludeColumns(project));
         return panel;
     }
@@ -59,6 +61,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     public boolean isModified() {
         return skipNullValues.isSelected() != ProjectSettings.isSkipNullEnabled(project)
                 || skipEmptyValues.isSelected() != ProjectSettings.isSkipEmptyEnabled(project)
+                || includeSchema.isSelected() != ProjectSettings.isIncludeSchemaEnabled(project)
                 || !excludedColumns.getText().equals(ProjectSettings.getExcludeColumns(project));
     }
 
@@ -67,6 +70,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
         ProjectSettings.setProperties(project,
                                       skipNullValues.isSelected(),
                                       skipEmptyValues.isSelected(),
+                                      includeSchema.isSelected(),
                                       excludedColumns.getText());
     }
 
