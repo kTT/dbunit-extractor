@@ -1,10 +1,9 @@
-package li.ktt;
+package li.ktt.datagrid;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
-import com.intellij.openapi.project.Project;
-import li.ktt.settings.ProjectSettings;
+import li.ktt.settings.ExtractorProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,10 +21,10 @@ public class DataGridHelper {
 
     private final List<Row> rows;
 
-    public DataGridHelper(Project project, final DataGrid dataGrid) {
+    public DataGridHelper(ExtractorProperties extractorProperties, final DataGrid dataGrid) {
         this.schemaName = initSchemaName(dataGrid);
         this.tableName = initTableName(dataGrid);
-        String excludedColumns = ProjectSettings.getExcludeColumns(project);
+        String excludedColumns = extractorProperties.getExcludeColumns();
         this.filteredColumns = initFilteredColumns(excludedColumns, getSelectedColumns(dataGrid));
         this.rows = getSelectedRows(dataGrid);
     }

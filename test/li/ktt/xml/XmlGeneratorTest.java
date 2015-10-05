@@ -1,7 +1,9 @@
-package li.ktt;
+package li.ktt.xml;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import li.ktt.datagrid.DataGridHelper;
+import li.ktt.settings.ExtractorProperties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,9 +35,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsWithSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(true, true, true);
+        ExtractorProperties extractorProperties = new ExtractorProperties(true, true, true, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema2", "Table2", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);
@@ -51,9 +53,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingEmptiesWithSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(true, true, false);
+        ExtractorProperties extractorProperties = new ExtractorProperties(true, true, false, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema2", "Table2", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);
@@ -69,9 +71,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingNullsWithSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(true, false, true);
+        ExtractorProperties extractorProperties = new ExtractorProperties(true, false, true, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema2", "Table2", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);
@@ -87,9 +89,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingNullsAndEmptiesWithSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(true, false, false);
+        ExtractorProperties extractorProperties = new ExtractorProperties(true, false, false, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema2", "Table2", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);
@@ -105,9 +107,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsWithoutSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(false, true, true);
+        ExtractorProperties extractorProperties = new ExtractorProperties(false, true, true, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema1", "Table1", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);
@@ -123,9 +125,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingEmptiesWithoutSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(false, true, false);
+        ExtractorProperties extractorProperties = new ExtractorProperties(false, true, false, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema1", "Table1", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows();
@@ -141,9 +143,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingNullsWithoutSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(false, false, true);
+        ExtractorProperties extractorProperties = new ExtractorProperties(false, false, true, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema1", "Table1", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows();
@@ -159,9 +161,9 @@ public class XmlGeneratorTest {
     @Test
     public void shouldReturnAllRowsIncludingNullsAndEmptiesWithoutSchema() {
         // given
-        XmlConfiguration xmlConfiguration = new XmlConfiguration(false, false, false);
+        ExtractorProperties extractorProperties = new ExtractorProperties(false, false, false, NO_EXCLUDED_COLUMNS);
         DataGridHelper data = new DataGridHelper("superSchema1", "Table1", columns, rows);
-        XmlGenerator generator = new XmlGenerator(xmlConfiguration, data);
+        XmlGenerator generator = new XmlGenerator(extractorProperties, data);
 
         // when
         generator.appendRows(rows);

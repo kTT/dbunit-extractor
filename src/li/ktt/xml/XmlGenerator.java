@@ -1,24 +1,26 @@
-package li.ktt;
+package li.ktt.xml;
 
-import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataConsumer.Column;
+import com.intellij.database.datagrid.DataConsumer.Row;
+import li.ktt.datagrid.DataGridHelper;
+import li.ktt.settings.ExtractorProperties;
 
 import java.util.List;
 
 public class XmlGenerator {
 
-    private XmlConfiguration xmlConfiguration;
+    private ExtractorProperties extractorProperties;
 
     private DataGridHelper data;
 
     private final StringBuilder builder;
 
-    public XmlGenerator(XmlConfiguration xmlConfiguration, DataGridHelper data) {
-        this(xmlConfiguration, data, new StringBuilder());
+    public XmlGenerator(ExtractorProperties extractorProperties, DataGridHelper data) {
+        this(extractorProperties, data, new StringBuilder());
     }
 
-    public XmlGenerator(XmlConfiguration xmlConfiguration, DataGridHelper data, StringBuilder builder) {
-        this.xmlConfiguration = xmlConfiguration;
+    public XmlGenerator(ExtractorProperties extractorProperties, DataGridHelper data, StringBuilder builder) {
+        this.extractorProperties = extractorProperties;
         this.data = data;
         this.builder = builder;
     }
@@ -43,7 +45,7 @@ public class XmlGenerator {
 
     public void appendRow(final Row row) {
         builder.append("<");
-        if (xmlConfiguration.isIncludeSchemaEnabled()) {
+        if (extractorProperties.isIncludeSchema()) {
             builder.append(data.getSchemaName()).append(".");
         }
         builder.append(data.getTableName()).append(" ");
@@ -68,11 +70,11 @@ public class XmlGenerator {
     }
 
     private boolean notEmptyOrEmptyAllowed(final Object columnValue) {
-        return (columnValue == null || !String.valueOf(columnValue).isEmpty()) || !xmlConfiguration.isSkipEmptyEnabled();
+        return (columnValue == null || !String.valueOf(columnValue).isEmpty()) || !extractorProperties.isSkipEmpty();
     }
 
     private boolean notNullOrNullAllowed(final Object columnValue) {
-        return columnValue != null || !xmlConfiguration.isSkipNullEnabled();
+        return columnValue != null || !extractorProperties.isSkipNull();
     }
 
 }
