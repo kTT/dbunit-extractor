@@ -54,13 +54,13 @@ public class DataGridHelper {
     }
 
     @NotNull
-    private List<Column> getSelectedColumns(final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getColumns(dataGrid.getSelectionModel().getSelectedColumns());
+    private List<Row> getSelectedRows(final DataGrid dataGrid) {
+        return dataGrid.getDataModel().getRows(dataGrid.getSelectionModel().getSelectedRows());
     }
 
     @NotNull
-    public List<Row> getSelectedRows(final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getRows(dataGrid.getSelectionModel().getSelectedRows());
+    private List<Column> getSelectedColumns(final DataGrid dataGrid) {
+        return dataGrid.getDataModel().getColumns(dataGrid.getSelectionModel().getSelectedColumns());
     }
 
     @Nullable
