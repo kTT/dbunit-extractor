@@ -50,37 +50,41 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     @Nullable
     @Override
     public JComponent createComponent() {
-        skipNullValues.setSelected(ProjectSettings.isSkipNullEnabled(project));
-        skipEmptyValues.setSelected(ProjectSettings.isSkipEmptyEnabled(project));
-        includeSchema.setSelected(ProjectSettings.isIncludeSchemaEnabled(project));
-        excludedColumns.setText(ProjectSettings.getExcludeColumns(project));
+        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
+
+        includeSchema.setSelected(extractorProperties.isIncludeSchema());
+        skipNullValues.setSelected(extractorProperties.isSkipNull());
+        skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
+        excludedColumns.setText(extractorProperties.getExcludeColumns());
+
         return panel;
     }
 
     @Override
     public boolean isModified() {
-        return skipNullValues.isSelected() != ProjectSettings.isSkipNullEnabled(project)
-                || skipEmptyValues.isSelected() != ProjectSettings.isSkipEmptyEnabled(project)
-                || includeSchema.isSelected() != ProjectSettings.isIncludeSchemaEnabled(project)
-                || !excludedColumns.getText().equals(ProjectSettings.getExcludeColumns(project));
+        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
+
+        return skipNullValues.isSelected() != extractorProperties.isSkipNull()
+                || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
+                || includeSchema.isSelected() != extractorProperties.isIncludeSchema()
+                || !excludedColumns.getText().equals(extractorProperties.getExcludeColumns());
     }
 
     @Override
     public void apply() throws ConfigurationException {
         ProjectSettings.setProperties(project,
-                                      skipNullValues.isSelected(),
-                                      skipEmptyValues.isSelected(),
-                                      includeSchema.isSelected(),
-                                      excludedColumns.getText());
+                skipNullValues.isSelected(),
+                skipEmptyValues.isSelected(),
+                includeSchema.isSelected(),
+                excludedColumns.getText());
     }
 
     @Override
     public void reset() {
-
     }
 
     @Override
     public void disposeUIResources() {
-
     }
+
 }
