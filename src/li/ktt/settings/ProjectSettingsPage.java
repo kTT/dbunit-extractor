@@ -17,12 +17,17 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     private JTextArea excludedColumns;
     private JPanel panel;
 
-    final private Project project;
+    private final Project project;
+    private final ProjectSettings projectSettings;
 
     public ProjectSettingsPage(final Project project) {
-        this.project = project;
+        this(project, ProjectSettings.getInstance());
     }
 
+    protected ProjectSettingsPage(final Project project, final ProjectSettings projectSettings) {
+        this.project = project;
+        this.projectSettings = projectSettings;
+    }
     @NotNull
     @Override
     public String getId() {
@@ -50,7 +55,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     @Nullable
     @Override
     public JComponent createComponent() {
-        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
+        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
 
         includeSchema.setSelected(extractorProperties.isIncludeSchema());
         skipNullValues.setSelected(extractorProperties.isSkipNull());
@@ -62,7 +67,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public boolean isModified() {
-        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
+        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
 
         return skipNullValues.isSelected() != extractorProperties.isSkipNull()
                 || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
@@ -72,10 +77,10 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public void apply() throws ConfigurationException {
-        ProjectSettings.setProperties(project,
+        projectSettings.setProperties(project,
+                includeSchema.isSelected(),
                 skipNullValues.isSelected(),
                 skipEmptyValues.isSelected(),
-                includeSchema.isSelected(),
                 excludedColumns.getText());
     }
 
@@ -85,6 +90,22 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public void disposeUIResources() {
+    }
+
+    protected JCheckBox getIncludeSchema() {
+        return includeSchema;
+    }
+
+    protected JCheckBox getSkipNullValues() {
+        return skipNullValues;
+    }
+
+    protected JCheckBox getSkipEmptyValues() {
+        return skipEmptyValues;
+    }
+
+    protected JTextArea getExcludedColumns() {
+        return excludedColumns;
     }
 
 }

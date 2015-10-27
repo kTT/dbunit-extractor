@@ -18,7 +18,7 @@ public class CopyToDbUnit extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         DataContext dataContext = e.getDataContext();
         DataGrid dataGrid = DatabaseDataKeys.DATA_GRID_KEY.getData(dataContext);
-        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(dataContext);
+        ExtractorProperties extractorProperties = ProjectSettings.getInstance().getExtractorProperties(dataContext);
         actionPerformed(extractorProperties, dataGrid);
     }
 
