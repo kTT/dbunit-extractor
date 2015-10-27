@@ -28,6 +28,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
         this.project = project;
         this.projectSettings = projectSettings;
     }
+
     @NotNull
     @Override
     public String getId() {
@@ -69,9 +70,9 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     public boolean isModified() {
         ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
 
-        return skipNullValues.isSelected() != extractorProperties.isSkipNull()
+        return includeSchema.isSelected() != extractorProperties.isIncludeSchema()
+                || skipNullValues.isSelected() != extractorProperties.isSkipNull()
                 || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
-                || includeSchema.isSelected() != extractorProperties.isIncludeSchema()
                 || !excludedColumns.getText().equals(extractorProperties.getExcludeColumns());
     }
 
@@ -96,7 +97,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
         int size = excludeValidator.getInvalidLines().size();
         for (int i = 0; i < size; i++) {
             int lineNumber = excludeValidator.getInvalidLines().get(i);
-            lines +=  lineNumber;
+            lines += lineNumber;
             if (i < size - 1) {
                 lines += ", ";
             }
@@ -106,6 +107,12 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public void reset() {
+        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
+
+        skipNullValues.setSelected(extractorProperties.isSkipNull());
+        skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
+        includeSchema.setSelected(extractorProperties.isIncludeSchema());
+        excludedColumns.setText(extractorProperties.getExcludeColumns());
     }
 
     @Override

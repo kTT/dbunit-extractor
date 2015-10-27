@@ -132,6 +132,29 @@ public class ProjectSettingsPageTest {
         verify(projectSettings, times(0)).setProperties(anyObject(), anyBoolean(), anyBoolean(), anyBoolean(), anyString());
     }
 
+    @Test
+    public void shouldResetConfiguration () {
+        // given
+        ProjectSettingsPage page = preparePageWithMocks();
+
+        // when
+        page.getExcludedColumns().setText("newVALUE\\\n"
+                + "someGoodValue\n"
+                + "[\n"
+                + "(\n"
+                + ".*dbo\n");
+        page.getIncludeSchema().setSelected(false);
+        page.getSkipNullValues().setSelected(true);
+
+        page.reset();
+
+        // then
+        assertEquals(true, page.getIncludeSchema().isSelected());
+        assertEquals(false, page.getSkipNullValues().isSelected());
+        assertEquals(true, page.getSkipEmptyValues().isSelected());
+        assertEquals("ble\\.value\n", page.getExcludedColumns().getText());
+    }
+
     private ProjectSettingsPage preparePageWithMocks() {
         ExtractorProperties extractorProperties = new ExtractorProperties(true, false, true, "ble\\.value\n");
         when(projectSettings.getExtractorProperties(project)).thenReturn(extractorProperties);
