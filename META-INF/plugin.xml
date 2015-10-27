@@ -1,14 +1,20 @@
 <idea-plugin version="2">
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>0.4</version>
+  <version>0.5</version>
   <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
 
   <description><![CDATA[
-      DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.
+      DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.<br /><br/>
+      Authors:
+      <ul>
+        <li>Pawel Salata</li>
+        <li>Robert Kapala</li>
+      </ul>
     ]]></description>
 
   <change-notes><![CDATA[
+      0.5 - adds regular expressions validation for excluded columns<br />
       0.4 - adds include schema name option to include schema in exported xml lines<br />
       0.3 - adds skip null, skip empty value and exclude columns patterns<br />
       0.2 - fixes table name on jTds connection <br />
