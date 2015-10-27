@@ -77,11 +77,31 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public void apply() throws ConfigurationException {
-        projectSettings.setProperties(project,
-                includeSchema.isSelected(),
-                skipNullValues.isSelected(),
-                skipEmptyValues.isSelected(),
-                excludedColumns.getText());
+        ExcludedColumns excludeValidator = new ExcludedColumns(excludedColumns.getText());
+        if (excludeValidator.isValid()) {
+            projectSettings.setProperties(project,
+                    includeSchema.isSelected(),
+                    skipNullValues.isSelected(),
+                    skipEmptyValues.isSelected(),
+                    excludedColumns.getText());
+        } else {
+            String message = invalidRegularExpressionsMessage(excludeValidator);
+            throw new ConfigurationException(message);
+        }
+    }
+
+    @NotNull
+    private String invalidRegularExpressionsMessage(ExcludedColumns excludeValidator) {
+        String lines = "Invalid regular expressions in lines: ";
+        int size = excludeValidator.getInvalidLines().size();
+        for (int i = 0; i < size; i++) {
+            int lineNumber = excludeValidator.getInvalidLines().get(i);
+            lines +=  lineNumber;
+            if (i < size - 1) {
+                lines += ", ";
+            }
+        }
+        return lines;
     }
 
     @Override
