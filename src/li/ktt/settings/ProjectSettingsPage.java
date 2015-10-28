@@ -17,16 +17,16 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     private JTextArea excludedColumns;
     private JPanel panel;
 
-    private final Project project;
     private final ProjectSettings projectSettings;
+    private ExtractorProperties extractorProperties;
 
     public ProjectSettingsPage(final Project project) {
-        this(project, ProjectSettings.getInstance());
+        this(ProjectSettings.getInstance(project));
     }
 
-    protected ProjectSettingsPage(final Project project, final ProjectSettings projectSettings) {
-        this.project = project;
+    protected ProjectSettingsPage(final ProjectSettings projectSettings) {
         this.projectSettings = projectSettings;
+        this.extractorProperties = this.projectSettings.getExtractorProperties();
     }
 
     @NotNull
@@ -56,8 +56,6 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     @Nullable
     @Override
     public JComponent createComponent() {
-        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
-
         includeSchema.setSelected(extractorProperties.isIncludeSchema());
         skipNullValues.setSelected(extractorProperties.isSkipNull());
         skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
@@ -68,8 +66,6 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public boolean isModified() {
-        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
-
         return includeSchema.isSelected() != extractorProperties.isIncludeSchema()
                 || skipNullValues.isSelected() != extractorProperties.isSkipNull()
                 || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
@@ -80,7 +76,7 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     public void apply() throws ConfigurationException {
         ExcludedColumns excludeValidator = new ExcludedColumns(excludedColumns.getText());
         if (excludeValidator.isValid()) {
-            projectSettings.setProperties(project,
+            this.extractorProperties = projectSettings.setProperties(
                     includeSchema.isSelected(),
                     skipNullValues.isSelected(),
                     skipEmptyValues.isSelected(),
@@ -107,8 +103,6 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public void reset() {
-        ExtractorProperties extractorProperties = projectSettings.getExtractorProperties(project);
-
         skipNullValues.setSelected(extractorProperties.isSkipNull());
         skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
         includeSchema.setSelected(extractorProperties.isIncludeSchema());

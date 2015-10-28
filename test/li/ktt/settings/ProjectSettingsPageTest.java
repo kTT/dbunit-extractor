@@ -1,7 +1,6 @@
 package li.ktt.settings;
 
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -10,17 +9,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectSettingsPageTest {
-
-    @Mock
-    private Project project;
 
     @Mock
     private ProjectSettings projectSettings;
@@ -28,7 +21,7 @@ public class ProjectSettingsPageTest {
     @Test
     public void shouldReturnCorrectPluginName() {
         // when
-        ProjectSettingsPage page = new ProjectSettingsPage(project);
+        ProjectSettingsPage page = new ProjectSettingsPage(projectSettings);
 
         // then
         assertEquals("DbUnit Extractor", page.getDisplayName());
@@ -86,7 +79,7 @@ public class ProjectSettingsPageTest {
     @Test
     public void shouldReturnNullForUnusedElements() {
         // when
-        ProjectSettingsPage page = new ProjectSettingsPage(project);
+        ProjectSettingsPage page = new ProjectSettingsPage(projectSettings);
 
         // then
         assertEquals(null, page.getHelpTopic());
@@ -94,7 +87,7 @@ public class ProjectSettingsPageTest {
     }
 
     @Test
-    public void shouldApplyConfiguration () throws ConfigurationException {
+    public void shouldApplyConfiguration() throws ConfigurationException {
         // given
         ProjectSettingsPage page = preparePageWithMocks();
 
@@ -105,20 +98,20 @@ public class ProjectSettingsPageTest {
         page.apply();
 
         // then
-        verify(projectSettings).setProperties(project, false, true, true, "newVALUE");
+        verify(projectSettings).setProperties(false, true, true, "newVALUE");
     }
 
     @Test
-    public void shouldNotApplyConfiguration () {
+    public void shouldNotApplyConfiguration() {
         // given
         ProjectSettingsPage page = preparePageWithMocks();
 
         // when
         page.getExcludedColumns().setText("newVALUE\\\n"
-            + "someGoodValue\n"
-            + "[\n"
-            + "(\n"
-            + ".*dbo\n");
+                + "someGoodValue\n"
+                + "[\n"
+                + "(\n"
+                + ".*dbo\n");
         page.getIncludeSchema().setSelected(false);
         page.getSkipNullValues().setSelected(true);
         try {
@@ -129,11 +122,11 @@ public class ProjectSettingsPageTest {
         }
 
         // then
-        verify(projectSettings, times(0)).setProperties(anyObject(), anyBoolean(), anyBoolean(), anyBoolean(), anyString());
+        verify(projectSettings, times(0)).setProperties(anyBoolean(), anyBoolean(), anyBoolean(), anyString());
     }
 
     @Test
-    public void shouldResetConfiguration () {
+    public void shouldResetConfiguration() {
         // given
         ProjectSettingsPage page = preparePageWithMocks();
 
@@ -157,8 +150,8 @@ public class ProjectSettingsPageTest {
 
     private ProjectSettingsPage preparePageWithMocks() {
         ExtractorProperties extractorProperties = new ExtractorProperties(true, false, true, "ble\\.value\n");
-        when(projectSettings.getExtractorProperties(project)).thenReturn(extractorProperties);
-        ProjectSettingsPage page = new ProjectSettingsPage(project, projectSettings);
+        when(projectSettings.getExtractorProperties()).thenReturn(extractorProperties);
+        ProjectSettingsPage page = new ProjectSettingsPage(projectSettings);
         page.createComponent();
         return page;
     }
