@@ -14,6 +14,10 @@ Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML 
 5. Select "Copy to clipboard as DbUnit XML" from context menu
 6. Paste result in your .xml file
 
+# Download
+
+[Jetbrains DbUnit Extractor plugin page](https://plugins.jetbrains.com/plugin/7958?pr=idea)
+
 # License
 
 This project is licensed under the MIT License.

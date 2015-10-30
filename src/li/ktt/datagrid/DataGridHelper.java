@@ -3,13 +3,13 @@ package li.ktt.datagrid;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
+import li.ktt.settings.ExcludedColumns;
 import li.ktt.settings.ExtractorProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class DataGridHelper {
 
@@ -21,11 +21,14 @@ public class DataGridHelper {
 
     private final List<Row> rows;
 
+    private final ExcludedColumns excludedColumns;
+
     public DataGridHelper(ExtractorProperties extractorProperties, final DataGrid dataGrid) {
         this.schemaName = initSchemaName(dataGrid);
         this.tableName = initTableName(dataGrid);
-        String excludedColumns = extractorProperties.getExcludeColumns();
-        this.filteredColumns = initFilteredColumns(excludedColumns, getSelectedColumns(dataGrid));
+        String excludedColumnsString = extractorProperties.getExcludeColumns();
+        excludedColumns = new ExcludedColumns(excludedColumnsString);
+        this.filteredColumns = initFilteredColumns(getSelectedColumns(dataGrid));
         this.rows = getSelectedRows(dataGrid);
     }
 
@@ -33,6 +36,7 @@ public class DataGridHelper {
     public DataGridHelper(String schemaName, String tableName, List<Column> filteredColumns, List<Row> rows) {
         this.schemaName = schemaName;
         this.tableName = tableName;
+        this.excludedColumns = new ExcludedColumns("");
         this.filteredColumns = filteredColumns;
         this.rows = rows;
     }
@@ -83,33 +87,14 @@ public class DataGridHelper {
         return name;
     }
 
-    private List<Column> initFilteredColumns(String excludedColumns, final List<Column> allColumns) {
+    private List<Column> initFilteredColumns(final List<Column> allColumns) {
         List<Column> filtered = new LinkedList<Column>();
-        List<Pattern> excludedColumnPatterns = initPatterns(excludedColumns);
         for (final Column column : allColumns) {
-            boolean canBeAdded = true;
-            for (final Pattern pattern : excludedColumnPatterns) {
-                if (pattern.matcher(this.tableName + "." + column.name).matches()) {
-                    canBeAdded = false;
-                    break;
-                }
-            }
-            if (canBeAdded) {
+            if (this.excludedColumns.canBeAdded(this.tableName + "." + column.name)) {
                 filtered.add(column);
             }
         }
         return filtered;
-    }
-
-    private List<Pattern> initPatterns(String excludedColumns) {
-        List<Pattern> patterns = new LinkedList<Pattern>();
-        if (excludedColumns != null && !excludedColumns.isEmpty()) {
-            for (String line : excludedColumns.split("\n")) {
-                Pattern pattern = Pattern.compile(line);
-                patterns.add(pattern);
-            }
-        }
-        return patterns;
     }
 
 }

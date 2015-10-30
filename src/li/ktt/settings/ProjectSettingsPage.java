@@ -17,10 +17,16 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     private JTextArea excludedColumns;
     private JPanel panel;
 
-    final private Project project;
+    private final ProjectSettings projectSettings;
+    private ExtractorProperties extractorProperties;
 
     public ProjectSettingsPage(final Project project) {
-        this.project = project;
+        this(ProjectSettings.getInstance(project));
+    }
+
+    protected ProjectSettingsPage(final ProjectSettings projectSettings) {
+        this.projectSettings = projectSettings;
+        this.extractorProperties = this.projectSettings.getExtractorProperties();
     }
 
     @NotNull
@@ -50,8 +56,6 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     @Nullable
     @Override
     public JComponent createComponent() {
-        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
-
         includeSchema.setSelected(extractorProperties.isIncludeSchema());
         skipNullValues.setSelected(extractorProperties.isSkipNull());
         skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
@@ -62,29 +66,67 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
 
     @Override
     public boolean isModified() {
-        ExtractorProperties extractorProperties = ProjectSettings.getExtractorProperties(project);
-
-        return skipNullValues.isSelected() != extractorProperties.isSkipNull()
+        return includeSchema.isSelected() != extractorProperties.isIncludeSchema()
+                || skipNullValues.isSelected() != extractorProperties.isSkipNull()
                 || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
-                || includeSchema.isSelected() != extractorProperties.isIncludeSchema()
                 || !excludedColumns.getText().equals(extractorProperties.getExcludeColumns());
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        ProjectSettings.setProperties(project,
-                skipNullValues.isSelected(),
-                skipEmptyValues.isSelected(),
-                includeSchema.isSelected(),
-                excludedColumns.getText());
+        ExcludedColumns excludeValidator = new ExcludedColumns(excludedColumns.getText());
+        if (excludeValidator.isValid()) {
+            this.extractorProperties = projectSettings.setProperties(
+                    includeSchema.isSelected(),
+                    skipNullValues.isSelected(),
+                    skipEmptyValues.isSelected(),
+                    excludedColumns.getText());
+        } else {
+            String message = invalidRegularExpressionsMessage(excludeValidator);
+            throw new ConfigurationException(message);
+        }
+    }
+
+    @NotNull
+    private String invalidRegularExpressionsMessage(ExcludedColumns excludeValidator) {
+        String lines = "Invalid regular expressions in lines: ";
+        int size = excludeValidator.getInvalidLines().size();
+        for (int i = 0; i < size; i++) {
+            int lineNumber = excludeValidator.getInvalidLines().get(i);
+            lines += lineNumber;
+            if (i < size - 1) {
+                lines += ", ";
+            }
+        }
+        return lines;
     }
 
     @Override
     public void reset() {
+        skipNullValues.setSelected(extractorProperties.isSkipNull());
+        skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
+        includeSchema.setSelected(extractorProperties.isIncludeSchema());
+        excludedColumns.setText(extractorProperties.getExcludeColumns());
     }
 
     @Override
     public void disposeUIResources() {
+    }
+
+    protected JCheckBox getIncludeSchema() {
+        return includeSchema;
+    }
+
+    protected JCheckBox getSkipNullValues() {
+        return skipNullValues;
+    }
+
+    protected JCheckBox getSkipEmptyValues() {
+        return skipEmptyValues;
+    }
+
+    protected JTextArea getExcludedColumns() {
+        return excludedColumns;
     }
 
 }
