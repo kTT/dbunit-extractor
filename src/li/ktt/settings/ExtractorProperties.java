@@ -36,19 +36,4 @@ public class ExtractorProperties {
         return excludeColumns;
     }
 
-    public void setSkipNull(final boolean skipNull) {
-        this.skipNull = skipNull;
-    }
-
-    public void setSkipEmpty(final boolean skipEmpty) {
-        this.skipEmpty = skipEmpty;
-    }
-
-    public void setExcludeColumns(final String excludeColumns) {
-        this.excludeColumns = excludeColumns;
-    }
-
-    public void setIncludeSchema(final boolean includeSchema) {
-        this.includeSchema = includeSchema;
-    }
 }
