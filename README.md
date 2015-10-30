@@ -5,6 +5,8 @@ DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.
 
 Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML lines.
 
+[![DbUnit Extractor plugin for IntelliJ IDEA Ultimate](http://img.youtube.com/vi/YjBO2bImpvY/0.jpg)](http://www.youtube.com/watch?v=YjBO2bImpvY)
+
 # Usage
 
 1. Install plugin and set up database connection
