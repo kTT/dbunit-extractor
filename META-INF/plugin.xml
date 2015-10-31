@@ -21,6 +21,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      0.6 - adds popup with information if copy action
       0.5 - adds regular expressions validation for excluded columns, reset configuration<br />
       0.4 - adds include schema name option to include schema in exported xml lines<br />
       0.3 - adds skip null, skip empty value and exclude columns patterns<br />
