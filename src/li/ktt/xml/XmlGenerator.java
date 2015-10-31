@@ -2,6 +2,7 @@ package li.ktt.xml;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.icons.AllIcons;
 import li.ktt.datagrid.DataGridHelper;
 import li.ktt.settings.ExtractorProperties;
 
@@ -15,6 +16,12 @@ public class XmlGenerator {
 
     private final StringBuilder builder;
 
+    private int rowSize;
+
+    private final int columnsSize;
+
+    private final String tableName;
+
     public XmlGenerator(ExtractorProperties extractorProperties, DataGridHelper data) {
         this(extractorProperties, data, new StringBuilder());
     }
@@ -23,10 +30,12 @@ public class XmlGenerator {
         this.extractorProperties = extractorProperties;
         this.data = data;
         this.builder = builder;
+        this.columnsSize = data.getFilteredColumns().size();
+        this.tableName = data.getTableName();
     }
 
-    public String getOutput() {
-        return this.builder.toString();
+    public XmlOutput getOutput() {
+        return new XmlOutput(this.builder.toString(), this.rowSize, this.columnsSize, this.tableName);
     }
 
     public XmlGenerator appendRows() {
@@ -44,6 +53,7 @@ public class XmlGenerator {
     }
 
     public void appendRow(final Row row) {
+        this.rowSize++;
         builder.append("<");
         if (extractorProperties.isIncludeSchema()) {
             builder.append(data.getSchemaName()).append(".");
