@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>0.5</version>
+  <version>0.6</version>
   <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
 
   <description><![CDATA[
@@ -21,6 +21,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      0.6 - fixes compatibility with Intellij IDEA 15
       0.5 - adds regular expressions validation for excluded columns, reset configuration<br />
       0.4 - adds include schema name option to include schema in exported xml lines<br />
       0.3 - adds skip null, skip empty value and exclude columns patterns<br />
@@ -29,7 +30,7 @@
     ]]>
   </change-notes>
 
-  <idea-version since-build="131"/>
+  <idea-version since-build="143"/>
 
   <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
        on how to target different products -->
@@ -37,7 +38,8 @@
   <depends>com.intellij.modules.lang</depends>
   -->
 
-  <depends>com.intellij.database</depends>
+  <depends>com.intellij.modules.ultimate</depends>
+  <depends>com.intellij.modules.database</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <projectConfigurable instance="li.ktt.settings.ProjectSettingsPage" />
