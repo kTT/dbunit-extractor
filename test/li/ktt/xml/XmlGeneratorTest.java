@@ -47,7 +47,9 @@ public class XmlGeneratorTest {
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with null\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with empty value\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -65,7 +67,9 @@ public class XmlGeneratorTest {
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with null\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with empty value\" Type=\"\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -83,7 +87,9 @@ public class XmlGeneratorTest {
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with null\" Type=\"\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with empty value\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -101,7 +107,9 @@ public class XmlGeneratorTest {
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with null\" Type=\"\" />\n" +
                 "<superSchema2.Table2 Name=\"Super3\" Value=\"with empty value\" Type=\"\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -119,7 +127,9 @@ public class XmlGeneratorTest {
                 "<Table1 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with null\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with empty value\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -137,7 +147,9 @@ public class XmlGeneratorTest {
                 "<Table1 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with null\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with empty value\" Type=\"\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -155,7 +167,9 @@ public class XmlGeneratorTest {
                 "<Table1 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with null\" Type=\"\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with empty value\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     @Test
@@ -173,7 +187,9 @@ public class XmlGeneratorTest {
                 "<Table1 Name=\"Super3\" Value=\"j55\" Type=\"g12\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with null\" Type=\"\" />\n" +
                 "<Table1 Name=\"Super3\" Value=\"with empty value\" Type=\"\" />\n";
-        assertEquals(expectedResult, generator.getOutput());
+        assertEquals(expectedResult, generator.getOutput().getText());
+        assertEquals(4, generator.getOutput().getRowSize());
+        assertEquals(3, generator.getOutput().getColumnsSize());
     }
 
     private static Row createRow(int num, String... values) {
