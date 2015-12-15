@@ -70,21 +70,13 @@ public class DataGridHelper {
     @Nullable
     private String initTableName(final DataGrid dataGrid) {
         final List<Column> columns = dataGrid.getDataModel().getColumns();
-        String name = columns.isEmpty() ? null : columns.get(0).table;
-        if ((name == null || name.isEmpty()) && dataGrid.getDatabaseTable() != null) {
-            return dataGrid.getDatabaseTable().getName();
-        }
-        return name;
+        return columns.isEmpty() ? null : columns.get(0).table;
     }
 
     @Nullable
     private String initSchemaName(final DataGrid dataGrid) {
         final List<Column> columns = dataGrid.getDataModel().getColumns();
-        String name = columns.isEmpty() ? null : columns.get(0).schema;
-        if ((name == null || name.isEmpty()) && dataGrid.getDatabaseTable() != null) {
-            return dataGrid.getDatabaseTable().getSchema();
-        }
-        return name;
+        return columns.isEmpty() ? null : columns.get(0).schema;
     }
 
     private List<Column> initFilteredColumns(final List<Column> allColumns) {

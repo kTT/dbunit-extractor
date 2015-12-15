@@ -3,10 +3,9 @@ package li.ktt.datagrid;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
-import com.intellij.database.datagrid.DataGridModel;
+import com.intellij.database.datagrid.GridModel;
 import com.intellij.database.datagrid.ModelIndexSet;
 import com.intellij.database.datagrid.SelectionModel;
-import com.intellij.database.model.info.DatabaseTableLongInfo;
 import li.ktt.settings.ExtractorProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,7 @@ public class DataGridHelperTest {
     private ModelIndexSet<Column> selectedColumnsMock;
 
     @Mock
-    private DataGridModel dataModelMock;
+    private GridModel<Row, Column> dataModelMock;
 
     private final List<Row> sampleRows = new ArrayList<Row>();
 
@@ -99,24 +98,6 @@ public class DataGridHelperTest {
         // then
         assertEquals(null, data.getSchemaName());
         assertEquals(null, data.getTableName());
-    }
-
-    @Test
-    public void shouldReturnSchemaAndTableFromDatabaseTable() {
-        // given
-        DatabaseTableLongInfo databaseTableMock = mock(DatabaseTableLongInfo.class);
-        when(dataGridMock.getDatabaseTable()).thenReturn(databaseTableMock);
-        when(databaseTableMock.getSchema()).thenReturn("superSchema110");
-        when(databaseTableMock.getName()).thenReturn("superTable110");
-        ExtractorProperties properties = new ExtractorProperties(true, true, true, "");
-
-
-        // when
-        DataGridHelper data = new DataGridHelper(defaultProperties, dataGridMock);
-
-        // then
-        assertEquals("superSchema110", data.getSchemaName());
-        assertEquals("superTable110", data.getTableName());
     }
 
     @Test
