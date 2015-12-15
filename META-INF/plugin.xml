@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>0.6</version>
+  <version>0.7</version>
   <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
 
   <description><![CDATA[
@@ -21,6 +21,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      0.7 - adds popup with information if copy action
       0.6 - fixes compatibility with Intellij IDEA 15
       0.5 - adds regular expressions validation for excluded columns, reset configuration<br />
       0.4 - adds include schema name option to include schema in exported xml lines<br />
