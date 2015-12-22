@@ -3,6 +3,8 @@ package li.ktt.datagrid;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
+import com.intellij.database.datagrid.DataGridUtil;
+import com.intellij.database.model.DasTable;
 import li.ktt.settings.ExcludedColumns;
 import li.ktt.settings.ExtractorProperties;
 import org.jetbrains.annotations.NotNull;
@@ -69,14 +71,24 @@ public class DataGridHelper {
 
     @Nullable
     private String initTableName(final DataGrid dataGrid) {
+        DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<Column> columns = dataGrid.getDataModel().getColumns();
-        return columns.isEmpty() ? null : columns.get(0).table;
+        String name = columns.isEmpty() ? null : columns.get(0).table;
+        if ((name == null || name.isEmpty()) && table != null) {
+            return table.getName();
+        }
+        return name;
     }
 
     @Nullable
     private String initSchemaName(final DataGrid dataGrid) {
+        DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<Column> columns = dataGrid.getDataModel().getColumns();
-        return columns.isEmpty() ? null : columns.get(0).schema;
+        String name = columns.isEmpty() ? null : columns.get(0).schema;
+        if ((name == null || name.isEmpty()) && table != null && table.getDbParent() != null) {
+            return table.getDbParent().getName();
+        }
+        return name;
     }
 
     private List<Column> initFilteredColumns(final List<Column> allColumns) {
