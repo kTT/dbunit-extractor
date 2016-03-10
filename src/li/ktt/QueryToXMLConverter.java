@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -34,6 +35,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class QueryToXMLConverter extends PsiElementBaseIntentionAction implements IntentionAction {
+
+    private int TABLE_SCHEME_INDEX = 2;
 
     @NotNull
     public String getText() {
@@ -84,8 +87,7 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
         try (final Connection connection = DbImplUtil.getConnection(dataSource)) {
             try (final Statement statement = connection == null ? null : connection.createStatement()) {
-                try (final ResultSet resultSet = statement == null ? null : statement.executeQuery(
-                        query)) {
+                try (final ResultSet resultSet = statement == null ? null : statement.executeQuery(query)) {
 
                     if (resultSet == null) {
                         showPopup(editor, MessageType.ERROR, "Connection error");
@@ -96,9 +98,13 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                     final List<Column> columns = constructColumns(metaData);
                     final List<Row> rows = constructRows(metaData, resultSet);
 
+                    final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
+                            ? metaData.getSchemaName(1)
+                            : getSchemaName(connection, metaData.getTableName(1));
+
                     final ResultSetHelper resultSetHelper =
                             new ResultSetHelper(extractorProperties,
-                                                metaData.getSchemaName(1),
+                                                schema,
                                                 metaData.getTableName(1),
                                                 columns,
                                                 rows);
@@ -114,6 +120,18 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         } catch (Exception e) {
             showPopup(editor, MessageType.ERROR, e.getLocalizedMessage());
         }
+    }
+
+    private String getSchemaName(final Connection connection, final String tableName)
+            throws SQLException {
+        String tableType[] = {"TABLE"};
+        final DatabaseMetaData connectionMetaData = connection.getMetaData();
+        try (ResultSet result = connectionMetaData.getTables(null, null, tableName, tableType)) {
+            while (result.next()) {
+                return result.getString(TABLE_SCHEME_INDEX);
+            }
+        }
+        return null;
     }
 
     @NotNull
@@ -160,7 +178,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     public boolean isAvailable(@NotNull final Project project,
                                final Editor editor,
                                @NotNull final PsiElement psiElement) {
-        return editor.getDocument().getText().startsWith("<dataset>");
+        return StringUtil.isNotEmpty(editor.getSelectionModel().getSelectedText())
+                && editor.getDocument().getText().startsWith("<dataset>");
     }
 
     private void showPopup(final Editor editor,

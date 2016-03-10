@@ -1,6 +1,7 @@
 package li.ktt.datagrid;
 
-import com.intellij.database.datagrid.DataConsumer;
+import com.intellij.database.datagrid.DataConsumer.Column;
+import com.intellij.database.datagrid.DataConsumer.Row;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface DataHelper {
 
     String getTableName();
 
-    List<DataConsumer.Column> getFilteredColumns();
+    List<Column> getFilteredColumns();
 
-    List<DataConsumer.Row> getRows();
+    List<Row> getRows();
 }

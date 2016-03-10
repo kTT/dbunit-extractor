@@ -3,6 +3,9 @@
 DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.
 ![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/dbunit-extractor.png)
 
+Change SQL query to XML in-place.
+![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/in-place.gif)
+
 Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML lines.
 
 # Promo movie

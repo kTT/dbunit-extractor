@@ -2,7 +2,6 @@ package li.ktt;
 
 import com.intellij.database.DatabaseDataKeys;
 import com.intellij.database.datagrid.DataGrid;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
