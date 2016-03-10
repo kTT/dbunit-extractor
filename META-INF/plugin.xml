@@ -38,6 +38,12 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectConfigurable instance="li.ktt.settings.ProjectSettingsPage" />
+
+    <intentionAction>
+      <className>li.ktt.QueryToXMLConverter</className>
+      <category>XML</category>
+      <descriptionDirectoryName>ConvertToDbUnitXML</descriptionDirectoryName>
+    </intentionAction>
   </extensions>
 
   <application-components>
