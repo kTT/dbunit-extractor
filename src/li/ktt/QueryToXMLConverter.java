@@ -17,6 +17,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.HashSet;
 import li.ktt.datagrid.ResultSetHelper;
 import li.ktt.settings.ExtractorProperties;
 import li.ktt.settings.ProjectSettings;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class QueryToXMLConverter extends PsiElementBaseIntentionAction implements IntentionAction {
 
@@ -95,17 +97,24 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                     }
 
                     final ResultSetMetaData metaData = resultSet.getMetaData();
+
+                    Set<String> tableNames = getTablesNamesFromQuery(metaData);
+                    if (tableNames.size() != 1) {
+                        showPopup(editor, MessageType.ERROR, "Only one table queries are supported.");
+                        return;
+                    }
+
                     final List<Column> columns = constructColumns(metaData);
                     final List<Row> rows = constructRows(metaData, resultSet);
-
+                    final String tableName = metaData.getTableName(1);
                     final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
                             ? metaData.getSchemaName(1)
-                            : getSchemaName(connection, metaData.getTableName(1));
+                            : getSchemaName(connection, tableName);
 
                     final ResultSetHelper resultSetHelper =
                             new ResultSetHelper(extractorProperties,
                                                 schema,
-                                                metaData.getTableName(1),
+                                                tableName,
                                                 columns,
                                                 rows);
                     XmlGenerator xmlGenerator =
@@ -120,6 +129,18 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         } catch (Exception e) {
             showPopup(editor, MessageType.ERROR, e.getLocalizedMessage());
         }
+    }
+
+    @NotNull
+    private Set<String> getTablesNamesFromQuery(final ResultSetMetaData metaData)
+            throws SQLException {
+        Set<String> tableNames = new HashSet<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            if (StringUtil.isNotEmpty(metaData.getTableName(i))) {
+                tableNames.add(metaData.getTableName(i));
+            }
+        }
+        return tableNames;
     }
 
     private String getSchemaName(final Connection connection, final String tableName)
