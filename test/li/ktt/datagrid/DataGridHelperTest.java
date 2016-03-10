@@ -42,7 +42,7 @@ public class DataGridHelperTest {
 
     private final List<Column> sampleColumns = new ArrayList<Column>();
 
-    private final ExtractorProperties defaultProperties = new ExtractorProperties(true, true, true, "");
+    private final ExtractorProperties defaultProperties = new ExtractorProperties(true, true, true, "", null);
 
     @Before
     public void before() {

@@ -98,7 +98,7 @@ public class ProjectSettingsPageTest {
         page.apply();
 
         // then
-        verify(projectSettings).setProperties(false, true, true, "newVALUE");
+        verify(projectSettings).setProperties(false, true, true, "newVALUE", null);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ProjectSettingsPageTest {
         }
 
         // then
-        verify(projectSettings, times(0)).setProperties(anyBoolean(), anyBoolean(), anyBoolean(), anyString());
+        verify(projectSettings, times(0)).setProperties(anyBoolean(), anyBoolean(), anyBoolean(), anyString(), anyString());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ProjectSettingsPageTest {
     }
 
     private ProjectSettingsPage preparePageWithMocks() {
-        ExtractorProperties extractorProperties = new ExtractorProperties(true, false, true, "ble\\.value\n");
+        ExtractorProperties extractorProperties = new ExtractorProperties(true, false, true, "ble\\.value\n", null);
         when(projectSettings.getExtractorProperties()).thenReturn(extractorProperties);
         ProjectSettingsPage page = new ProjectSettingsPage(projectSettings);
         page.createComponent();

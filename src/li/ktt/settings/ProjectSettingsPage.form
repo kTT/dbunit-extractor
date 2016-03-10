@@ -70,6 +70,20 @@
           <text value="&lt;html&gt;&#10;In each line put regular expression. Matched columns will not be included in generated xml.&lt;br /&gt;&#10;Example:&#10;&lt;ul&gt;&#10;&lt;li&gt;MyTable\.updated - will exclude updated column in MyTable&lt;/li&gt;&#10;&lt;li&gt;.*\.updated - will exclude updated column in any table&lt;/li&gt;&#10;&lt;/ul&gt;&#10;&lt;/html&gt;"/>
         </properties>
       </component>
+      <component id="6e8ca" class="javax.swing.JLabel" binding="selectedDataSource">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Selected data source"/>
+        </properties>
+      </component>
+      <component id="f33b3" class="javax.swing.JComboBox" binding="selectedDataSourceValue">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
     </children>
   </grid>
 </form>
