@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DataGridHelper {
+public class DataGridHelper implements DataHelper {
 
     private final String schemaName;
 
@@ -43,18 +43,22 @@ public class DataGridHelper {
         this.rows = rows;
     }
 
+    @Override
     public String getSchemaName() {
         return schemaName;
     }
 
+    @Override
     public String getTableName() {
         return tableName;
     }
 
+    @Override
     public List<Column> getFilteredColumns() {
         return filteredColumns;
     }
 
+    @Override
     public List<Row> getRows() {
         return rows;
     }

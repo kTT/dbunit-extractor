@@ -2,8 +2,7 @@ package li.ktt.xml;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
-import com.intellij.icons.AllIcons;
-import li.ktt.datagrid.DataGridHelper;
+import li.ktt.datagrid.DataHelper;
 import li.ktt.settings.ExtractorProperties;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public class XmlGenerator {
 
     private ExtractorProperties extractorProperties;
 
-    private DataGridHelper data;
+    private DataHelper data;
 
     private final StringBuilder builder;
 
@@ -22,11 +21,11 @@ public class XmlGenerator {
 
     private final String tableName;
 
-    public XmlGenerator(ExtractorProperties extractorProperties, DataGridHelper data) {
+    public XmlGenerator(ExtractorProperties extractorProperties, DataHelper data) {
         this(extractorProperties, data, new StringBuilder());
     }
 
-    public XmlGenerator(ExtractorProperties extractorProperties, DataGridHelper data, StringBuilder builder) {
+    public XmlGenerator(ExtractorProperties extractorProperties, DataHelper data, StringBuilder builder) {
         this.extractorProperties = extractorProperties;
         this.data = data;
         this.builder = builder;
