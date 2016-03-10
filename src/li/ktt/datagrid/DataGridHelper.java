@@ -5,6 +5,7 @@ import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
 import com.intellij.database.datagrid.DataGridUtil;
 import com.intellij.database.model.DasTable;
+import com.intellij.openapi.util.text.StringUtil;
 import li.ktt.settings.ExcludedColumns;
 import li.ktt.settings.ExtractorProperties;
 import org.jetbrains.annotations.NotNull;
@@ -89,8 +90,8 @@ public class DataGridHelper implements DataHelper {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<Column> columns = dataGrid.getDataModel().getColumns();
         String name = columns.isEmpty() ? null : columns.get(0).schema;
-        if ((name == null || name.isEmpty()) && table != null && table.getDbParent() != null) {
-            return table.getDbParent().getName();
+        if (StringUtil.isEmpty(name) && table != null && table.getDbParent() != null) {
+            name = table.getDbParent().getName();
         }
         return name;
     }
