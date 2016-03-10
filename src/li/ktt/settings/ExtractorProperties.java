@@ -10,14 +10,17 @@ public class ExtractorProperties {
 
     private String excludeColumns;
 
+    private String selectedDataSourceName;
+
     public ExtractorProperties() {
     }
 
-    public ExtractorProperties(boolean includeSchema, boolean skipNull, boolean skipEmpty, String excludeColumns) {
+    public ExtractorProperties(boolean includeSchema, boolean skipNull, boolean skipEmpty, String excludeColumns, String selectedDataSourceName) {
         this.includeSchema = includeSchema;
         this.skipNull = skipNull;
         this.skipEmpty = skipEmpty;
         this.excludeColumns = excludeColumns;
+        this.selectedDataSourceName = selectedDataSourceName;
     }
 
     public boolean isSkipNull() {
@@ -36,4 +39,7 @@ public class ExtractorProperties {
         return excludeColumns;
     }
 
+    public String getSelectedDataSourceName() {
+        return selectedDataSourceName;
+    }
 }

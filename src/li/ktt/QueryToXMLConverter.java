@@ -55,9 +55,30 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         ExtractorProperties extractorProperties =
                 ProjectSettings.getExtractorProperties(SimpleDataContext.getProjectContext(project));
 
-        DbDataSource dataSource = DbPsiFacade.getInstance(project).getDataSources().get(0);
+        final List<DbDataSource> dataSources = DbPsiFacade.getInstance(project).getDataSources();
 
-        showPopup(editor, MessageType.INFO, "Using datasource: " + dataSource.getName());
+        if (dataSources.isEmpty()) {
+            showPopup(editor, MessageType.ERROR, "Could not find datasource.");
+            return;
+        }
+
+        final String selectedDataSourceName = extractorProperties.getSelectedDataSourceName();
+
+        DbDataSource dataSource = null;
+
+        if (StringUtil.isNotEmpty(selectedDataSourceName)) {
+            for (final DbDataSource source : dataSources) {
+                if (source.getName().equals(selectedDataSourceName)) {
+                    dataSource = source;
+                    break;
+                }
+            }
+        }
+
+        if (dataSource == null || StringUtil.isEmpty(selectedDataSourceName)) {
+            dataSource = dataSources.get(0);
+            showPopup(editor, MessageType.INFO, "Using first found datasource: " + dataSource.getName() + ". Please change default one in options.");
+        }
 
         final String query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
 

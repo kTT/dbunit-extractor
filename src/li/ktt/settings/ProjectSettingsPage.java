@@ -1,5 +1,6 @@
 package li.ktt.settings;
 
+import com.intellij.database.util.DbUtil;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
@@ -16,12 +17,17 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
     private JCheckBox includeSchema;
     private JTextArea excludedColumns;
     private JPanel panel;
+    private JLabel selectedDataSource;
+    private JComboBox<String> selectedDataSourceValue;
 
     private final ProjectSettings projectSettings;
     private ExtractorProperties extractorProperties;
 
+    private Project project;
+
     public ProjectSettingsPage(final Project project) {
         this(ProjectSettings.getInstance(project));
+        this.project = project;
     }
 
     protected ProjectSettingsPage(final ProjectSettings projectSettings) {
@@ -61,6 +67,14 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
         skipEmptyValues.setSelected(extractorProperties.isSkipEmpty());
         excludedColumns.setText(extractorProperties.getExcludeColumns());
 
+        selectedDataSourceValue.addItem("");
+        for (final String datasourceName : DbUtil.getExistingDataSourceNames(project)) {
+            selectedDataSourceValue.addItem(datasourceName);
+
+            if (datasourceName.equals(extractorProperties.getSelectedDataSourceName())) {
+                selectedDataSourceValue.setSelectedIndex(selectedDataSourceValue.getItemCount() - 1);
+            }
+        }
         return panel;
     }
 
@@ -69,7 +83,8 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
         return includeSchema.isSelected() != extractorProperties.isIncludeSchema()
                 || skipNullValues.isSelected() != extractorProperties.isSkipNull()
                 || skipEmptyValues.isSelected() != extractorProperties.isSkipEmpty()
-                || !excludedColumns.getText().equals(extractorProperties.getExcludeColumns());
+                || !excludedColumns.getText().equals(extractorProperties.getExcludeColumns())
+                || !selectedDataSourceValue.getSelectedItem().equals(extractorProperties.getSelectedDataSourceName());
     }
 
     @Override
@@ -80,7 +95,8 @@ public class ProjectSettingsPage implements SearchableConfigurable, Configurable
                     includeSchema.isSelected(),
                     skipNullValues.isSelected(),
                     skipEmptyValues.isSelected(),
-                    excludedColumns.getText());
+                    excludedColumns.getText(),
+                    (String) selectedDataSourceValue.getSelectedItem());
         } else {
             String message = invalidRegularExpressionsMessage(excludeValidator);
             throw new ConfigurationException(message);

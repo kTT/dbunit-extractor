@@ -16,6 +16,8 @@ public class ProjectSettings {
 
     private static final String DBUNIT_EXTRACTOR_EXCLUDE_COLUMNS_PROPERTY = "DbUnitExtractorExcludeColumns";
 
+    private static final String DBUNIT_EXTRACTOR_SELECTED_DATASOURCE_PROPERTY = "DbUnitExtractorSelectedDataSource";
+
     private static final Key<ExtractorProperties> DB_UNIT_PROPERTIES_KEY = Key.create(
             "DbUnitProperties");
 
@@ -35,7 +37,7 @@ public class ProjectSettings {
     }
 
     public ExtractorProperties setProperties(Boolean includeSchema, Boolean skipNull, Boolean skipEmpty,
-                              String excludeColumns) {
+                              String excludeColumns, String selectedDataSourceName) {
         final PropertiesComponent propertiesComponent = PropertiesComponent.getInstance(project);
 
         propertiesComponent.setValue(DBUNIT_EXTRACTOR_SKIP_NULL_PROPERTY, String.valueOf(skipNull));
@@ -44,8 +46,9 @@ public class ProjectSettings {
         propertiesComponent.setValue(DBUNIT_EXTRACTOR_INCLUDE_SCHEMA_PROPERTY,
                 String.valueOf(includeSchema));
         propertiesComponent.setValue(DBUNIT_EXTRACTOR_EXCLUDE_COLUMNS_PROPERTY, excludeColumns);
+        propertiesComponent.setValue(DBUNIT_EXTRACTOR_SELECTED_DATASOURCE_PROPERTY, selectedDataSourceName);
 
-        ExtractorProperties dbUnitProperties = new ExtractorProperties(includeSchema, skipNull, skipEmpty, excludeColumns);
+        ExtractorProperties dbUnitProperties = new ExtractorProperties(includeSchema, skipNull, skipEmpty, excludeColumns, selectedDataSourceName);
 
         project.putUserData(DB_UNIT_PROPERTIES_KEY, dbUnitProperties);
 
@@ -67,7 +70,8 @@ public class ProjectSettings {
         boolean skipNull = propertiesComponent.getBoolean(DBUNIT_EXTRACTOR_SKIP_NULL_PROPERTY, true);
         boolean skipEmpty = propertiesComponent.getBoolean(DBUNIT_EXTRACTOR_SKIP_EMPTY_PROPERTY, true);
         String excludedColumns = propertiesComponent.getValue(DBUNIT_EXTRACTOR_EXCLUDE_COLUMNS_PROPERTY, "");
-        return new ExtractorProperties(includeSchema, skipNull, skipEmpty, excludedColumns);
+        String selectedDataSource = propertiesComponent.getValue(DBUNIT_EXTRACTOR_SELECTED_DATASOURCE_PROPERTY, "");
+        return new ExtractorProperties(includeSchema, skipNull, skipEmpty, excludedColumns, selectedDataSource);
     }
 
 }
