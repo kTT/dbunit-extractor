@@ -45,7 +45,13 @@ Please synchronize your database. Intellij doesn't return metadata if datasource
 
 This driver doesn't return metadata by default (issue: https://sourceforge.net/p/jtds/bugs/546/). Please add **useCursors=true** parameter to your database connection url.
 
-Example: `jdbc:jtds:sqlserver://localhost/db;instance=TEST;**useCursors=true**`
+Example: `jdbc:jtds:sqlserver://localhost/db;instance=TEST;useCursors=true`
+
+* "Only one table queries are supported" error when using Microsoft driver.
+
+Please add **selectMethod=cursor** parameter to your database connection url.
+
+Example: `jdbc:sqlserver://localhost/db;instance=TEST;selectMethod=cursor`
 
 # License
 
