@@ -7,6 +7,7 @@ import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.database.util.DbImplUtil;
+import com.intellij.injected.editor.EditorWindowImpl;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -18,6 +19,10 @@ import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.SmartPointerManager;
+import com.intellij.psi.SmartPsiElementPointer;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.sql.psi.SqlSelectStatement;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.HashSet;
 import li.ktt.datagrid.ResultSetHelper;
@@ -74,7 +79,23 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
         final DbDataSource dataSource = getDataSource(editor, dataSources, selectedDataSourceName);
 
-        final String query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
+        final String query;
+        if (editor.getSelectionModel().hasSelection()) {
+            query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
+        } else {
+            SmartPsiElementPointer<SqlSelectStatement> pointer =
+                    getStatementPointer(project, psiElement);
+            if (pointer == null) {
+                pointer = getStatementPointer(project, psiElement.getPrevSibling());
+            }
+            if (pointer != null) {
+                query = pointer.getElement().getText();
+                editor.getSelectionModel()
+                      .setSelection(pointer.getRange().getStartOffset(), pointer.getRange().getEndOffset());
+            } else {
+                query = null;
+            }
+        }
 
         ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
             @Override
@@ -101,7 +122,9 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
         if (dataSource == null || StringUtil.isEmpty(selectedDataSourceName)) {
             dataSource = dataSources.get(0);
-            showPopup(editor, MessageType.INFO, "Using first found datasource: " + dataSource.getName() + ". Please change default one in options.");
+            showPopup(editor,
+                      MessageType.INFO,
+                      "Using first found datasource: " + dataSource.getName() + ". Please change default one in options.");
         }
         return dataSource;
     }
@@ -222,18 +245,50 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     public boolean isAvailable(@NotNull final Project project,
                                final Editor editor,
                                @NotNull final PsiElement psiElement) {
-        return StringUtil.isNotEmpty(editor.getSelectionModel().getSelectedText())
-                && editor.getDocument().getText().startsWith("<dataset>");
+        final boolean isDataSetFile;
+        if (editor instanceof EditorWindowImpl) {
+            isDataSetFile = ((EditorWindowImpl) editor).getDelegate()
+                                                       .getDocument()
+                                                       .getText()
+                                                       .startsWith("<dataset>");
+        } else {
+            isDataSetFile = editor.getDocument().getText().startsWith("<dataset>");
+        }
+        SmartPsiElementPointer<SqlSelectStatement> pointer = getStatementPointer(project, psiElement);
+        if (pointer == null && psiElement.getPrevSibling() != null) {
+            pointer = getStatementPointer(project, psiElement.getPrevSibling());
+        }
+        final String selectedText = editor.getSelectionModel().getSelectedText();
+        final boolean hasSelectedQuery = editor.getSelectionModel().hasSelection() && selectedText.trim().toUpperCase().startsWith("SELECT");
+        return isDataSetFile && (hasSelectedQuery || pointer != null);
+    }
+
+    @Nullable
+    private SmartPsiElementPointer<SqlSelectStatement> getStatementPointer(final @NotNull Project project,
+                                                                           final @NotNull PsiElement psiElement) {
+        final SqlSelectStatement sqlSelectStatement =
+                PsiTreeUtil.getParentOfType(psiElement.getContainingFile().findElementAt(psiElement.getTextOffset()),
+                                            SqlSelectStatement.class);
+        SmartPsiElementPointer<SqlSelectStatement> pointer = null;
+        if (sqlSelectStatement != null) {
+            pointer = SmartPointerManager.getInstance(project)
+                                         .createSmartPsiElementPointer(sqlSelectStatement);
+        }
+        return pointer;
     }
 
     private void showPopup(final Editor editor,
                            final MessageType messageType,
                            final String message) {
-        JBPopupFactory.getInstance()
-                      .createHtmlTextBalloonBuilder(message, messageType, null)
-                      .setFadeoutTime(7500)
-                      .createBalloon()
-                      .show(JBPopupFactory.getInstance().guessBestPopupLocation(editor),
-                            Balloon.Position.atRight);
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JBPopupFactory.getInstance()
+                              .createHtmlTextBalloonBuilder(message, messageType, null)
+                              .setFadeoutTime(7500)
+                              .createBalloon()
+                              .show(JBPopupFactory.getInstance().guessBestPopupLocation(editor), Balloon.Position.atRight);
+            }
+        });
     }
 }

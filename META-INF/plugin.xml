@@ -45,6 +45,7 @@
       <className>li.ktt.QueryToXMLConverter</className>
       <category>XML</category>
     </intentionAction>
+    <languageInjector implementation="li.ktt.SQLInjector" />
   </extensions>
 
   <application-components>
