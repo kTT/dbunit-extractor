@@ -8,6 +8,8 @@ import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.database.util.DbImplUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
@@ -25,6 +27,7 @@ import li.ktt.xml.XmlGenerator;
 import li.ktt.xml.XmlOutput;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -57,7 +60,7 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                        final Editor editor,
                        @NotNull final PsiElement psiElement) throws IncorrectOperationException {
 
-        ExtractorProperties extractorProperties =
+        final ExtractorProperties extractorProperties =
                 ProjectSettings.getExtractorProperties(SimpleDataContext.getProjectContext(project));
 
         final List<DbDataSource> dataSources = DbPsiFacade.getInstance(project).getDataSources();
@@ -69,6 +72,22 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
         final String selectedDataSourceName = extractorProperties.getSelectedDataSourceName();
 
+        final DbDataSource dataSource = getDataSource(editor, dataSources, selectedDataSourceName);
+
+        final String query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
+
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+            @Override
+            public void run() {
+                applySelectionChange(project, editor, extractorProperties, dataSource, query);
+            }
+        });
+    }
+
+    @Nullable
+    private DbDataSource getDataSource(final Editor editor,
+                                       final List<DbDataSource> dataSources,
+                                       final String selectedDataSourceName) {
         DbDataSource dataSource = null;
 
         if (StringUtil.isNotEmpty(selectedDataSourceName)) {
@@ -84,48 +103,52 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
             dataSource = dataSources.get(0);
             showPopup(editor, MessageType.INFO, "Using first found datasource: " + dataSource.getName() + ". Please change default one in options.");
         }
+        return dataSource;
+    }
 
-        final String query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
+    private void applySelectionChange(final Project project, final Editor editor,
+                                      final ExtractorProperties extractorProperties,
+                                      final DbDataSource dataSource, final String query) {
+        try (final Connection connection = DbImplUtil.getConnection(dataSource);
+             final Statement statement = connection == null ? null : connection.createStatement();
+             final ResultSet resultSet = statement == null ? null : statement.executeQuery(query)) {
 
-        try (final Connection connection = DbImplUtil.getConnection(dataSource)) {
-            try (final Statement statement = connection == null ? null : connection.createStatement()) {
-                try (final ResultSet resultSet = statement == null ? null : statement.executeQuery(query)) {
-
-                    if (resultSet == null) {
-                        showPopup(editor, MessageType.ERROR, "Connection error");
-                        return;
-                    }
-
-                    final ResultSetMetaData metaData = resultSet.getMetaData();
-
-                    Set<String> tableNames = getTablesNamesFromQuery(metaData);
-                    if (tableNames.size() != 1) {
-                        showPopup(editor, MessageType.ERROR, "Only one table queries are supported.");
-                        return;
-                    }
-
-                    final List<Column> columns = constructColumns(metaData);
-                    final List<Row> rows = constructRows(metaData, resultSet);
-                    final String tableName = metaData.getTableName(1);
-                    final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
-                            ? metaData.getSchemaName(1)
-                            : getSchemaName(connection, tableName);
-
-                    final ResultSetHelper resultSetHelper =
-                            new ResultSetHelper(extractorProperties,
-                                                schema,
-                                                tableName,
-                                                columns,
-                                                rows);
-                    XmlGenerator xmlGenerator =
-                            new XmlGenerator(extractorProperties, resultSetHelper);
-                    xmlGenerator.appendRows();
-
-                    replaceSelection(editor, xmlGenerator.getOutput());
-                } catch (SQLException e) {
-                    showPopup(editor, MessageType.ERROR, e.getLocalizedMessage());
-                }
+            if (resultSet == null) {
+                showPopup(editor, MessageType.ERROR, "Connection error");
+                return;
             }
+
+            final ResultSetMetaData metaData = resultSet.getMetaData();
+
+            Set<String> tableNames = getTablesNamesFromQuery(metaData);
+            if (tableNames.size() != 1) {
+                showPopup(editor, MessageType.ERROR, "Only one table queries are supported.");
+                return;
+            }
+
+            final List<Column> columns = constructColumns(metaData);
+            final List<Row> rows = constructRows(metaData, resultSet);
+            final String tableName = metaData.getTableName(1);
+            final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
+                    ? metaData.getSchemaName(1)
+                    : getSchemaName(connection, tableName);
+
+            final ResultSetHelper resultSetHelper =
+                    new ResultSetHelper(extractorProperties,
+                                        schema,
+                                        tableName,
+                                        columns,
+                                        rows);
+            final XmlGenerator xmlGenerator =
+                    new XmlGenerator(extractorProperties, resultSetHelper);
+            xmlGenerator.appendRows();
+
+            WriteCommandAction.runWriteCommandAction(project, new Runnable() {
+                @Override
+                public void run() {
+                    replaceSelection(editor, xmlGenerator.getOutput());
+                }
+            });
         } catch (Exception e) {
             showPopup(editor, MessageType.ERROR, e.getLocalizedMessage());
         }
