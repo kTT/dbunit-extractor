@@ -193,7 +193,7 @@ public class XmlGeneratorTest {
     }
 
     private static Row createRow(int num, String... values) {
-        return new Row(num, values);
+        return Row.create(num, values);
     }
 
     private static Column createColumn(int columnNum, String name) {

@@ -4,7 +4,9 @@ import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.datagrid.DataGrid;
 import com.intellij.database.datagrid.DataGridUtil;
+import com.intellij.database.datagrid.GridModel;
 import com.intellij.database.model.DasTable;
+import com.intellij.database.run.ui.DataAccessType;
 import com.intellij.openapi.util.text.StringUtil;
 import li.ktt.settings.ExcludedColumns;
 import li.ktt.settings.ExtractorProperties;
@@ -66,18 +68,23 @@ public class DataGridHelper implements DataHelper {
 
     @NotNull
     private List<Row> getSelectedRows(final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getRows(dataGrid.getSelectionModel().getSelectedRows());
+        return getDataModel(dataGrid).getRows(dataGrid.getSelectionModel().getSelectedRows());
+    }
+
+    @NotNull
+    private GridModel<Row, Column> getDataModel(final DataGrid dataGrid) {
+        return dataGrid.getDataModel(DataAccessType.DATABASE_DATA);
     }
 
     @NotNull
     private List<Column> getSelectedColumns(final DataGrid dataGrid) {
-        return dataGrid.getDataModel().getColumns(dataGrid.getSelectionModel().getSelectedColumns());
+        return getDataModel(dataGrid).getColumns(dataGrid.getSelectionModel().getSelectedColumns());
     }
 
     @Nullable
     private String initTableName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
-        final List<Column> columns = dataGrid.getDataModel().getColumns();
+        final List<Column> columns = getDataModel(dataGrid).getColumns();
         String name = columns.isEmpty() ? null : columns.get(0).table;
         if ((name == null || name.isEmpty()) && table != null) {
             return table.getName();
@@ -88,7 +95,7 @@ public class DataGridHelper implements DataHelper {
     @Nullable
     private String initSchemaName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
-        final List<Column> columns = dataGrid.getDataModel().getColumns();
+        final List<Column> columns = getDataModel(dataGrid).getColumns();
         String name = columns.isEmpty() ? null : columns.get(0).schema;
         if (StringUtil.isEmpty(name) && table != null && table.getDbParent() != null) {
             name = table.getDbParent().getName();
