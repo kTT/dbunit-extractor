@@ -6,6 +6,7 @@ import com.intellij.database.datagrid.DataGrid;
 import com.intellij.database.datagrid.GridModel;
 import com.intellij.database.datagrid.ModelIndexSet;
 import com.intellij.database.datagrid.SelectionModel;
+import com.intellij.database.run.ui.DataAccessType;
 import li.ktt.settings.ExtractorProperties;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class DataGridHelperTest {
     @Before
     public void before() {
         // dataGrid
-        when(dataGridMock.getDataModel()).thenReturn(dataModelMock);
+        when(dataGridMock.getDataModel(DataAccessType.DATABASE_DATA)).thenReturn(dataModelMock);
         when(dataGridMock.getSelectionModel()).thenReturn(selectionModelMock);
 
         // selectionModel

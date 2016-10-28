@@ -17,6 +17,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.SmartPointerManager;
@@ -83,15 +84,17 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         if (editor.getSelectionModel().hasSelection()) {
             query = StringUtil.trim(editor.getSelectionModel().getSelectedText());
         } else {
-            SmartPsiElementPointer<SqlSelectStatement> pointer =
-                    getStatementPointer(project, psiElement);
-            if (pointer == null) {
-                pointer = getStatementPointer(project, psiElement.getPrevSibling());
-            }
+            final SmartPsiElementPointer<SqlSelectStatement> pointer = getNearestPointer(project, psiElement);
             if (pointer != null) {
                 query = pointer.getElement().getText();
-                editor.getSelectionModel()
-                      .setSelection(pointer.getRange().getStartOffset(), pointer.getRange().getEndOffset());
+
+                final int startOffset = pointer.getRange().getStartOffset();
+                int endOffset = pointer.getRange().getEndOffset();
+
+                if (editor.getDocument().getText(TextRange.create(endOffset, endOffset + 1)).equals(";")) {
+                    endOffset += 1; // take semicolon after query
+                }
+                editor.getSelectionModel().setSelection(startOffset, endOffset);
             } else {
                 query = null;
             }
@@ -211,7 +214,7 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
                 values.add(resultSet.getString(i));
             }
-            rows.add(new Row(rowNum - 1, values.toArray()));
+            rows.add(Row.create(rowNum - 1, values.toArray()));
             ++rowNum;
         }
         return rows;
@@ -254,13 +257,23 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         } else {
             isDataSetFile = editor.getDocument().getText().startsWith("<dataset>");
         }
+        SmartPsiElementPointer<SqlSelectStatement> pointer = getNearestPointer(project, psiElement);
+        final String selectedText = editor.getSelectionModel().getSelectedText();
+        final boolean hasSelectedQuery = editor.getSelectionModel().hasSelection() && selectedText.trim().toUpperCase().startsWith("SELECT");
+        return isDataSetFile && (hasSelectedQuery || pointer != null);
+    }
+
+    private SmartPsiElementPointer<SqlSelectStatement> getNearestPointer(final @NotNull Project project,
+                                                                         final @NotNull PsiElement psiElement) {
         SmartPsiElementPointer<SqlSelectStatement> pointer = getStatementPointer(project, psiElement);
         if (pointer == null && psiElement.getPrevSibling() != null) {
             pointer = getStatementPointer(project, psiElement.getPrevSibling());
         }
-        final String selectedText = editor.getSelectionModel().getSelectedText();
-        final boolean hasSelectedQuery = editor.getSelectionModel().hasSelection() && selectedText.trim().toUpperCase().startsWith("SELECT");
-        return isDataSetFile && (hasSelectedQuery || pointer != null);
+        final String prevText = psiElement.getPrevSibling().getText();
+        if (pointer == null && (prevText.equals(";") || prevText.isEmpty())) {
+            pointer = getStatementPointer(project, psiElement.getPrevSibling().getPrevSibling());
+        }
+        return pointer;
     }
 
     @Nullable
