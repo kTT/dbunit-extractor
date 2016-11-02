@@ -271,7 +271,7 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         }
         if (pointer == null && psiElement.getPrevSibling() != null) {
             final String prevText = psiElement.getPrevSibling().getText();
-            if (pointer == null && (prevText.equals(";") || prevText.isEmpty())) {
+            if (prevText.equals(";") || prevText.isEmpty()) {
                 pointer = getStatementPointer(project, psiElement.getPrevSibling().getPrevSibling());
             }
         }
