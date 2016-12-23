@@ -22,7 +22,7 @@ Export database data to XML DbUnit dataset.
 **In-place convert**
 
 1. Install plugin and set up database connection
-2. Open xml file for dbunit sample data (it has to starts with "<dataset>")
+2. Open xml file for dbunit sample data (it has to starts with "\<dataset\>")
 3. Write query you want to convert
 4. Select query, press ALT+ENTER and choose "Convert query to XML".
 
