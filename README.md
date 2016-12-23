@@ -1,17 +1,12 @@
 # DbUnit Extractor
 
-Export database data to xml DbUnit dataset.
+Export database data to XML DbUnit dataset.
 
-Copy selected rows from SQL Console as DbUnit XML.
-![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/dbunit-extractor.png)
-Change SQL query to XML in-place.
-![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/in-place.gif)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=43EEBTD2V4L6E)
 
-Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML lines.
+# Download
 
-# Promo movie
-
-[![DbUnit Extractor plugin for IntelliJ IDEA Ultimate](http://img.youtube.com/vi/YjBO2bImpvY/0.jpg)](http://www.youtube.com/watch?v=YjBO2bImpvY)
+[Jetbrains DbUnit Extractor plugin page](https://plugins.jetbrains.com/plugin/7958?pr=idea)
 
 # Usage
 
@@ -31,9 +26,16 @@ Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML 
 3. Write query you want to convert
 4. Select query, press ALT+ENTER and choose "Convert query to XML".
 
-# Download
+Copy selected rows from SQL Console as DbUnit XML.
+![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/dbunit-extractor.png)
+Change SQL query to XML in-place.
+![](https://raw.githubusercontent.com/kTT/dbunit-extractor/master/in-place.gif)
 
-[Jetbrains DbUnit Extractor plugin page](https://plugins.jetbrains.com/plugin/7958?pr=idea)
+Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML lines.
+
+# Promo movie
+
+[![DbUnit Extractor plugin for IntelliJ IDEA Ultimate](http://img.youtube.com/vi/YjBO2bImpvY/0.jpg)](http://www.youtube.com/watch?v=YjBO2bImpvY)
 
 # Known issues
 
