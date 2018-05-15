@@ -2,6 +2,7 @@ package li.ktt.xml;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.database.extractors.tz.TimeZonedTimestamp;
 import li.ktt.datagrid.DataHelper;
 import li.ktt.settings.ExtractorProperties;
 
@@ -68,7 +69,9 @@ public class XmlGenerator {
     private void appendField(final StringBuilder builder,
                              final Row row,
                              final Column column) {
-        final Object columnValue = row.values[column.columnNum];
+        final Object columnValue = row.values[column.columnNum] instanceof TimeZonedTimestamp
+                ? ((TimeZonedTimestamp) row.values[column.columnNum]).getValue().toString()
+                : row.values[column.columnNum];
         if (notNullOrNullAllowed(columnValue) && notEmptyOrEmptyAllowed(columnValue)) {
             builder.append(column.name).append("=\"");
             if (columnValue != null) {
