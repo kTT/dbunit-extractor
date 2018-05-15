@@ -8,6 +8,8 @@ import li.ktt.settings.ExtractorProperties;
 
 import java.util.List;
 
+import static com.intellij.openapi.util.text.StringUtil.escapeXml;
+
 public class XmlGenerator {
 
     private ExtractorProperties extractorProperties;
@@ -69,13 +71,13 @@ public class XmlGenerator {
     private void appendField(final StringBuilder builder,
                              final Row row,
                              final Column column) {
-        final Object columnValue = row.values[column.columnNum] instanceof TimeZonedTimestamp
+        final String columnValue = row.values[column.columnNum] instanceof TimeZonedTimestamp
                 ? ((TimeZonedTimestamp) row.values[column.columnNum]).getValue().toString()
-                : row.values[column.columnNum];
+                : row.values[column.columnNum].toString();
         if (notNullOrNullAllowed(columnValue) && notEmptyOrEmptyAllowed(columnValue)) {
             builder.append(column.name).append("=\"");
             if (columnValue != null) {
-                builder.append(columnValue);
+                builder.append(escapeXml(columnValue));
             }
             builder.append("\" ");
         }
