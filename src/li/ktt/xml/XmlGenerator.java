@@ -3,6 +3,7 @@ package li.ktt.xml;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.extractors.tz.TimeZonedTimestamp;
+import com.intellij.database.remote.jdbc.LobInfo;
 import li.ktt.datagrid.DataHelper;
 import li.ktt.settings.ExtractorProperties;
 
@@ -71,9 +72,7 @@ public class XmlGenerator {
     private void appendField(final StringBuilder builder,
                              final Row row,
                              final Column column) {
-        final String columnValue = row.values[column.columnNum] instanceof TimeZonedTimestamp
-                ? ((TimeZonedTimestamp) row.values[column.columnNum]).getValue().toString()
-                : row.values[column.columnNum].toString();
+        final String columnValue = extractStringValue(row.values[column.columnNum]);
         if (notNullOrNullAllowed(columnValue) && notEmptyOrEmptyAllowed(columnValue)) {
             builder.append(column.name).append("=\"");
             if (columnValue != null) {
@@ -81,6 +80,16 @@ public class XmlGenerator {
             }
             builder.append("\" ");
         }
+    }
+
+    private String extractStringValue(final Object value) {
+        if (value instanceof TimeZonedTimestamp) {
+            return ((TimeZonedTimestamp) value).getValue().toString();
+        }
+        if (value instanceof LobInfo.ClobInfo) {
+            return ((LobInfo.ClobInfo) value).data;
+        }
+        return value.toString();
     }
 
     private boolean notEmptyOrEmptyAllowed(final Object columnValue) {
