@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>1.2</version>
+  <version>1.3</version>
   <vendor email="pawel@ktt.li" url="http://ktt.li">Pawel Mozdzonek</vendor>
 
   <description><![CDATA[
@@ -21,6 +21,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      1.3 - adds xml escaping, fixes timestamp and varchar(max) columns extraction
       1.2 - fixes @NotNull exception
       1.1 - fixes NPE in some situations
       1.0 - adds support for IntelliJ 2016.3
