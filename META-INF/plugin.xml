@@ -1,14 +1,14 @@
-<idea-plugin version="2">
+<idea-plugin>
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
   <version>1.2</version>
-  <vendor email="salatapawel0@gmail.com" url="http://ktt.li">Pawel Salata</vendor>
+  <vendor email="pawel@ktt.li" url="http://ktt.li">Pawel Mozdzonek</vendor>
 
   <description><![CDATA[
       DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.<br /><br/>
       <h4>Authors</h4>
       <ul>
-        <li>Pawel Salata</li>
+        <li>Pawel Mozdzonek</li>
         <li>Robert Kapala</li>
       </ul>
       <h4>Source code and documentation</h4>
