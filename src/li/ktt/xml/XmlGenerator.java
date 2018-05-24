@@ -89,7 +89,7 @@ public class XmlGenerator {
         if (value instanceof LobInfo.ClobInfo) {
             return ((LobInfo.ClobInfo) value).data;
         }
-        return value.toString();
+        return value != null ? value.toString() : null;
     }
 
     private boolean notEmptyOrEmptyAllowed(final Object columnValue) {
