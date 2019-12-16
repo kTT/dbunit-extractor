@@ -213,7 +213,10 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
         String[] tables = querySubstring.split(",");
         for (String tableName : tables) {
-            tableNames.add(tableName.trim());
+            if (tableName.contains("."))
+                tableNames.add(tableName.substring(tableName.indexOf(".") + 1).trim());
+            else
+                tableNames.add(tableName.trim());
         }
 
         return tableNames;
