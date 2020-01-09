@@ -41,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -135,9 +136,10 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     private void applySelectionChange(final Project project, final Editor editor,
                                       final ExtractorProperties extractorProperties,
                                       final DbDataSource dataSource, final String query) {
+        final String cleanedQuery = query.replaceAll(";$", "");
         try (final Connection connection = DbImplUtil.getConnection(dataSource);
              final Statement statement = connection == null ? null : connection.createStatement();
-             final ResultSet resultSet = statement == null ? null : statement.executeQuery(query)) {
+             final ResultSet resultSet = statement == null ? null : statement.executeQuery(cleanedQuery)) {
 
             if (resultSet == null) {
                 showPopup(editor, MessageType.ERROR, "Connection error");
@@ -148,13 +150,16 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
 
             Set<String> tableNames = getTablesNamesFromQuery(metaData);
             if (tableNames.size() != 1) {
-                showPopup(editor, MessageType.ERROR, "Only one table queries are supported.");
-                return;
+                tableNames = getTablesNamesFromQuery(cleanedQuery);
+                if (tableNames.size() != 1) {
+                    showPopup(editor, MessageType.ERROR, "Only one table queries are supported.");
+                    return;
+                }
             }
 
             final List<Column> columns = constructColumns(metaData);
             final List<Row> rows = constructRows(metaData, resultSet);
-            final String tableName = metaData.getTableName(1);
+            final String tableName = tableNames.iterator().next();
             final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
                     ? metaData.getSchemaName(1)
                     : getSchemaName(connection, tableName);
@@ -183,12 +188,37 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     @NotNull
     private Set<String> getTablesNamesFromQuery(final ResultSetMetaData metaData)
             throws SQLException {
-        Set<String> tableNames = new HashSet<>();
+        Set<String> tableNames = new LinkedHashSet<>();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             if (StringUtil.isNotEmpty(metaData.getTableName(i))) {
                 tableNames.add(metaData.getTableName(i));
             }
         }
+        return tableNames;
+    }
+
+    @NotNull
+    private Set<String> getTablesNamesFromQuery(final String query) {
+        Set<String> tableNames = new LinkedHashSet<>();
+
+        int startIndex = query.indexOf("FROM") + 5;
+        int endIndex = query.indexOf("WHERE");
+
+        String querySubstring = null;
+        if (endIndex > startIndex) {
+            querySubstring = query.substring(startIndex, endIndex);
+        } else {
+            querySubstring = query.substring(startIndex);
+        }
+
+        String[] tables = querySubstring.split(",");
+        for (String tableName : tables) {
+            if (tableName.contains("."))
+                tableNames.add(tableName.substring(tableName.indexOf(".") + 1).trim());
+            else
+                tableNames.add(tableName.trim());
+        }
+
         return tableNames;
     }
 
@@ -201,6 +231,12 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                 return result.getString(TABLE_SCHEME_INDEX);
             }
         }
+
+        // Fallback: Try to take schema from tableName.
+        if (tableName.contains(".")) {
+            return tableName.substring(0, tableName.indexOf("."));
+        }
+
         return null;
     }
 
