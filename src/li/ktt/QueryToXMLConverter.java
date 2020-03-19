@@ -2,12 +2,15 @@ package li.ktt;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
+import com.intellij.database.dataSource.DatabaseConnection;
+import com.intellij.database.dataSource.connection.DGDepartment;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.database.util.DbImplUtil;
-import com.intellij.injected.editor.EditorWindowImpl;
+import com.intellij.database.util.GuardedRef;
+import com.intellij.injected.editor.EditorWindow;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -34,7 +37,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -136,8 +138,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                                       final ExtractorProperties extractorProperties,
                                       final DbDataSource dataSource, final String query) {
         final String cleanedQuery = query.replaceAll(";$", "");
-        try (final Connection connection = DbImplUtil.getConnection(dataSource);
-             final Statement statement = connection == null ? null : connection.createStatement();
+        try (final GuardedRef<DatabaseConnection> connection = DbImplUtil.getDatabaseConnection(dataSource, DGDepartment.CODE_GENERATION);
+             final Statement statement = connection == null ? null : connection.get().getJdbcConnection().createStatement();
              final ResultSet resultSet = statement == null ? null : statement.executeQuery(cleanedQuery)) {
 
             if (resultSet == null) {
@@ -161,7 +163,7 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
             final String tableName = tableNames.iterator().next();
             final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
                     ? metaData.getSchemaName(1)
-                    : getSchemaName(connection, tableName);
+                    : getSchemaName(connection.get(), tableName);
 
             final ResultSetHelper resultSetHelper =
                     new ResultSetHelper(extractorProperties,
@@ -221,9 +223,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         return tableNames;
     }
 
-    private String getSchemaName(final Connection connection, final String tableName)
-            throws SQLException {
-        String tableType[] = {"TABLE"};
+    private String getSchemaName(final DatabaseConnection connection, final String tableName) throws SQLException {
+        String[] tableType = {"TABLE"};
         final DatabaseMetaData connectionMetaData = connection.getMetaData();
         try (ResultSet result = connectionMetaData.getTables(null, null, tableName, tableType)) {
             while (result.next()) {
@@ -284,11 +285,11 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                                final Editor editor,
                                @NotNull final PsiElement psiElement) {
         final boolean isDataSetFile;
-        if (editor instanceof EditorWindowImpl) {
-            isDataSetFile = ((EditorWindowImpl) editor).getDelegate()
-                                                       .getDocument()
-                                                       .getText()
-                                                       .startsWith("<dataset>");
+        if (editor instanceof EditorWindow) {
+            isDataSetFile = ((EditorWindow) editor).getDelegate()
+                                                   .getDocument()
+                                                   .getText()
+                                                   .startsWith("<dataset>");
         } else {
             isDataSetFile = editor.getDocument().getText().startsWith("<dataset>");
         }

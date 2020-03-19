@@ -97,8 +97,8 @@ public class DataGridHelper implements DataHelper {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<Column> columns = getDataModel(dataGrid).getColumns();
         String name = columns.isEmpty() ? null : columns.get(0).schema;
-        if (StringUtil.isEmpty(name) && table != null && table.getDbParent() != null) {
-            name = table.getDbParent().getName();
+        if (StringUtil.isEmpty(name) && table != null && table.getDasParent() != null) {
+            name = table.getDasParent().getName();
         }
         return name;
     }

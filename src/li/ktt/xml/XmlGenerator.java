@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static com.intellij.openapi.util.text.StringUtil.escapeXml;
+import static com.intellij.openapi.util.text.StringUtil.escapeXmlEntities;
 
 public class XmlGenerator {
 
@@ -79,7 +79,7 @@ public class XmlGenerator {
         if (notNullOrNullAllowed(columnValue) && notEmptyOrEmptyAllowed(columnValue)) {
             builder.append(column.name).append("=\"");
             if (columnValue != null) {
-                builder.append(escapeXml(columnValue));
+                builder.append(escapeXmlEntities(columnValue));
             }
             builder.append("\" ");
         }
