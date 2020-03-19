@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>1.6</version>
+  <version>1.7</version>
   <vendor email="pawel@ktt.li" url="http://ktt.li">Pawel Mozdzonek</vendor>
 
   <description><![CDATA[
@@ -22,6 +22,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      1.7 - removes deprecated code
       1.6 - makes timestamps as zoned UTC
       1.5 - fallback values if schema cannot be determined
       1.4 - fixes NPE when extracting column with null value
@@ -41,7 +42,7 @@
     ]]>
   </change-notes>
 
-  <idea-version since-build="163"/>
+  <idea-version since-build="181"/>
 
   <depends>com.intellij.modules.ultimate</depends>
   <depends>com.intellij.database</depends>
