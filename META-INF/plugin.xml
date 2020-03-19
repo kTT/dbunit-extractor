@@ -61,7 +61,7 @@
   </project-components>
 
   <actions>
-    <action id="CopyToDbUnit" class="li.ktt.CopyToDbUnit" text="Copy to clipboard as DbUnit XML"
+    <action id="CopyToDbUnit" class="li.ktt.CopyToDbUnit" text="Copy to Clipboard as DbUnit XML"
       description="Copy selected rows to DbUnit xml format">
       <add-to-group group-id="Console.TableResult.PopupGroup" anchor="last" />
     </action>

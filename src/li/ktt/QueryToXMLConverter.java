@@ -25,7 +25,6 @@ import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.sql.psi.SqlSelectStatement;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.containers.HashSet;
 import li.ktt.datagrid.ResultSetHelper;
 import li.ktt.settings.ExtractorProperties;
 import li.ktt.settings.ProjectSettings;
