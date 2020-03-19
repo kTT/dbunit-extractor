@@ -7,6 +7,9 @@ import com.intellij.database.remote.jdbc.LobInfo;
 import li.ktt.datagrid.DataHelper;
 import li.ktt.settings.ExtractorProperties;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static com.intellij.openapi.util.text.StringUtil.escapeXml;
@@ -85,6 +88,9 @@ public class XmlGenerator {
     private String extractStringValue(final Object value) {
         if (value instanceof TimeZonedTimestamp) {
             return ((TimeZonedTimestamp) value).getValue().toString();
+        }
+        if (value instanceof Timestamp) {
+            return Timestamp.valueOf(LocalDateTime.ofInstant(((Timestamp) value).toInstant(), ZoneOffset.UTC)).toString();
         }
         if (value instanceof LobInfo.ClobInfo) {
             return ((LobInfo.ClobInfo) value).data;
