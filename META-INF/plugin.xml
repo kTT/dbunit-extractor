@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>1.7</version>
-  <vendor email="pawel@ktt.li" url="http://ktt.li">Pawel Mozdzonek</vendor>
+  <version>1.8</version>
+  <vendor email="pawel@ktt.li" url="https://ktt.li">Pawel Mozdzonek</vendor>
 
   <description><![CDATA[
       DbUnit Extractor - copy selected rows from SQL Console as DbUnit XML.<br /><br/>
@@ -22,33 +22,36 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      1.7 - removes deprecated code
-      1.6 - makes timestamps as zoned UTC
-      1.5 - fallback values if schema cannot be determined
-      1.4 - fixes NPE when extracting column with null value
-      1.3 - adds xml escaping, fixes timestamp and varchar(max) columns extraction
-      1.2 - fixes @NotNull exception
-      1.1 - fixes NPE in some situations
-      1.0 - adds support for IntelliJ 2016.3
-      0.9 - adds in-place convert without text selection
-      0.8 - adds in-place convert for dataset files
-      0.7 - adds additional check for table name and schema
-      0.6 - fixes compatibility with Intellij IDEA 15, adds popup with information if copy action
-      0.5 - adds regular expressions validation for excluded columns, reset configuration<br />
-      0.4 - adds include schema name option to include schema in exported xml lines<br />
-      0.3 - adds skip null, skip empty value and exclude columns patterns<br />
-      0.2 - fixes table name on jTds connection <br />
-      0.1 - initial version
+    <ul>
+      <li>1.8 - fixes connection issues on latest IntelliJ versions and moves configuration under Tools section</li>
+      <li>1.7 - removes deprecated code</li>
+      <li>1.6 - makes timestamps as zoned UTC</li>
+      <li>1.5 - fallback values if schema cannot be determined</li>
+      <li>1.4 - fixes NPE when extracting column with null value</li>
+      <li>1.3 - adds xml escaping, fixes timestamp and varchar(max) columns extraction</li>
+      <li>1.2 - fixes @NotNull exception</li>
+      <li>1.1 - fixes NPE in some situations</li>
+      <li>1.0 - adds support for IntelliJ 2016.3</li>
+      <li>0.9 - adds in-place convert without text selection</li>
+      <li>0.8 - adds in-place convert for dataset files</li>
+      <li>0.7 - adds additional check for table name and schema</li>
+      <li>0.6 - fixes compatibility with Intellij IDEA 15, adds popup with information if copy action</li>
+      <li>0.5 - adds regular expressions validation for excluded columns, reset configuration<br /></li>
+      <li>0.4 - adds include schema name option to include schema in exported xml lines<br /></li>
+      <li>0.3 - adds skip null, skip empty value and exclude columns patterns<br /></li>
+      <li>0.2 - fixes table name on jTds connection <br /></li>
+      <li>0.1 - initial version</li>
+    </ul>
     ]]>
   </change-notes>
 
-  <idea-version since-build="181"/>
+  <idea-version since-build="201.6668.121"/>
 
   <depends>com.intellij.modules.ultimate</depends>
   <depends>com.intellij.database</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <projectConfigurable instance="li.ktt.settings.ProjectSettingsPage" />
+    <projectConfigurable instance="li.ktt.settings.ProjectSettingsPage" parentId="tools" />
 
     <intentionAction>
       <className>li.ktt.QueryToXMLConverter</className>

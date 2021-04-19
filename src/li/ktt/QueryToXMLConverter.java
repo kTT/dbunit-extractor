@@ -8,6 +8,10 @@ import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
+import com.intellij.database.remote.jdbc.RemoteDatabaseMetaData;
+import com.intellij.database.remote.jdbc.RemoteResultSet;
+import com.intellij.database.remote.jdbc.RemoteResultSetMetaData;
+import com.intellij.database.remote.jdbc.RemoteStatement;
 import com.intellij.database.util.DbImplUtil;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.injected.editor.EditorWindow;
@@ -37,11 +41,8 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -138,16 +139,18 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                                       final ExtractorProperties extractorProperties,
                                       final DbDataSource dataSource, final String query) {
         final String cleanedQuery = query.replaceAll(";$", "");
-        try (final GuardedRef<DatabaseConnection> connection = DbImplUtil.getDatabaseConnection(dataSource, DGDepartment.CODE_GENERATION);
-             final Statement statement = connection == null ? null : connection.get().getJdbcConnection().createStatement();
-             final ResultSet resultSet = statement == null ? null : statement.executeQuery(cleanedQuery)) {
+        RemoteStatement statement = null;
+        RemoteResultSet resultSet = null;
+        try (final GuardedRef<DatabaseConnection> connection = DbImplUtil.getDatabaseConnection(dataSource, DGDepartment.CODE_GENERATION)) {
+             statement = connection == null ? null : connection.get().getRemoteConnection().createStatement();
+             resultSet = statement == null ? null : statement.executeQuery(cleanedQuery);
 
             if (resultSet == null) {
                 showPopup(editor, MessageType.ERROR, "Connection error");
                 return;
             }
 
-            final ResultSetMetaData metaData = resultSet.getMetaData();
+            final RemoteResultSetMetaData metaData = resultSet.getMetaData();
 
             Set<String> tableNames = getTablesNamesFromQuery(metaData);
             if (tableNames.size() != 1) {
@@ -183,12 +186,27 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
             });
         } catch (Exception e) {
             showPopup(editor, MessageType.ERROR, e.getLocalizedMessage());
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (Exception e) {
+                    showPopup(editor, MessageType.ERROR, "Failed to close connection.");
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (Exception e) {
+                    showPopup(editor, MessageType.ERROR, "Failed to close connection.");
+                }
+            }
         }
     }
 
     @NotNull
-    private Set<String> getTablesNamesFromQuery(final ResultSetMetaData metaData)
-            throws SQLException {
+    private Set<String> getTablesNamesFromQuery(final RemoteResultSetMetaData metaData)
+            throws SQLException, RemoteException {
         Set<String> tableNames = new LinkedHashSet<>();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             if (StringUtil.isNotEmpty(metaData.getTableName(i))) {
@@ -223,13 +241,17 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
         return tableNames;
     }
 
-    private String getSchemaName(final DatabaseConnection connection, final String tableName) throws SQLException {
+    private String getSchemaName(final DatabaseConnection connection, final String tableName) throws SQLException, RemoteException {
         String[] tableType = {"TABLE"};
-        final DatabaseMetaData connectionMetaData = connection.getMetaData();
-        try (ResultSet result = connectionMetaData.getTables(null, null, tableName, tableType)) {
+        final RemoteDatabaseMetaData connectionMetaData = connection.getRemoteMetaData();
+        RemoteResultSet result = null;
+        try {
+            result = connectionMetaData.getTables(null, null, tableName, tableType);
             while (result.next()) {
                 return result.getString(TABLE_SCHEME_INDEX);
             }
+        } finally {
+            result.close();
         }
 
         // Fallback: Try to take schema from tableName.
@@ -241,8 +263,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     }
 
     @NotNull
-    private List<Row> constructRows(final ResultSetMetaData metaData,
-                                    final ResultSet resultSet) throws SQLException {
+    private List<Row> constructRows(final RemoteResultSetMetaData metaData,
+                                    final RemoteResultSet resultSet) throws SQLException, RemoteException {
         final List<Row> rows = new LinkedList<>();
         int rowNum = 0;
         while (resultSet.next()) {
@@ -257,8 +279,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     }
 
     @NotNull
-    private List<Column> constructColumns(final ResultSetMetaData metaData)
-            throws SQLException {
+    private List<Column> constructColumns(final RemoteResultSetMetaData metaData)
+            throws SQLException, RemoteException {
         final List<Column> columns = new LinkedList<>();
 
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
