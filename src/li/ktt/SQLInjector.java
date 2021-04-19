@@ -16,11 +16,7 @@ public class SQLInjector implements LanguageInjector {
         if (isDataSetFile && isSelectQuery) {
             final Language language = Language.findLanguageByID("SQL");
             if (language != null) {
-                try {
-                    places.addPlace(language, TextRange.from(0, host.getTextLength()), null, null);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+                places.addPlace(language, TextRange.from(0, host.getTextLength()), null, null);
             }
         }
     }
