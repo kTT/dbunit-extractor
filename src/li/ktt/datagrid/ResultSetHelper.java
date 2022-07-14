@@ -2,8 +2,11 @@ package li.ktt.datagrid;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.database.datagrid.GridColumn;
+import com.intellij.database.datagrid.GridRow;
 import li.ktt.settings.ExcludedColumns;
 import li.ktt.settings.ExtractorProperties;
+import net.miginfocom.layout.Grid;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,17 +17,17 @@ public class ResultSetHelper implements DataHelper {
 
     private final String tableName;
 
-    private final List<Column> filteredColumns;
+    private final List<GridColumn> filteredColumns;
 
-    private final List<Row> rows;
+    private final List<GridRow> rows;
 
     private final ExcludedColumns excludedColumns;
 
     public ResultSetHelper(ExtractorProperties extractorProperties,
                            final String schemaName,
                            final String tableName,
-                           final List<Column> columns,
-                           final List<Row> rows) {
+                           final List<GridColumn> columns,
+                           final List<GridRow> rows) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         String excludedColumnsString = extractorProperties.getExcludeColumns();
@@ -44,19 +47,19 @@ public class ResultSetHelper implements DataHelper {
     }
 
     @Override
-    public List<Column> getFilteredColumns() {
+    public List<GridColumn> getFilteredColumns() {
         return filteredColumns;
     }
 
     @Override
-    public List<Row> getRows() {
+    public List<GridRow> getRows() {
         return rows;
     }
 
-    private List<Column> initFilteredColumns(final List<Column> allColumns) {
-        List<Column> filtered = new LinkedList<>();
-        for (final Column column : allColumns) {
-            if (this.excludedColumns.canBeAdded(this.tableName + "." + column.name)) {
+    private List<GridColumn> initFilteredColumns(final List<GridColumn> allColumns) {
+        List<GridColumn> filtered = new LinkedList<>();
+        for (final GridColumn column : allColumns) {
+            if (this.excludedColumns.canBeAdded(this.tableName + "." + column.getName())) {
                 filtered.add(column);
             }
         }
