@@ -2,6 +2,8 @@ package li.ktt.xml;
 
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.database.datagrid.GridColumn;
+import com.intellij.database.datagrid.GridRow;
 import li.ktt.datagrid.DataGridHelper;
 import li.ktt.settings.ExtractorProperties;
 import org.junit.BeforeClass;
@@ -16,9 +18,9 @@ public class XmlGeneratorTest {
 
     private static final String NO_EXCLUDED_COLUMNS = "";
 
-    private static final List<Column> columns = new ArrayList<Column>();
+    private static final List<GridColumn> columns = new ArrayList<>();
 
-    private static final List<Row> rows = new ArrayList<Row>();
+    private static final List<GridRow> rows = new ArrayList<>();
 
     @BeforeClass
     public static void before() {

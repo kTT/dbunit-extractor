@@ -1,7 +1,7 @@
 package li.ktt.xml;
 
-import com.intellij.database.datagrid.DataConsumer.Column;
-import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.database.datagrid.GridColumn;
+import com.intellij.database.datagrid.GridRow;
 import com.intellij.database.extractors.tz.TimeZonedTimestamp;
 import com.intellij.database.remote.jdbc.LobInfo;
 import li.ktt.datagrid.DataHelper;
@@ -45,20 +45,20 @@ public class XmlGenerator {
     }
 
     public XmlGenerator appendRows() {
-        for (Row row : data.getRows()) {
+        for (GridRow row : data.getRows()) {
             appendRow(row);
         }
         return this;
     }
 
-    public XmlGenerator appendRows(List<Row> rows) {
-        for (Row row : rows) {
+    public XmlGenerator appendRows(List<GridRow> rows) {
+        for (GridRow row : rows) {
             appendRow(row);
         }
         return this;
     }
 
-    public void appendRow(final Row row) {
+    public void appendRow(final GridRow row) {
         this.rowSize++;
         builder.append("<");
         if (extractorProperties.isIncludeSchema()) {
@@ -66,18 +66,18 @@ public class XmlGenerator {
         }
         builder.append(data.getTableName()).append(" ");
 
-        for (final Column column : data.getFilteredColumns()) {
+        for (final GridColumn column : data.getFilteredColumns()) {
             appendField(builder, row, column);
         }
         builder.append("/>\n");
     }
 
     private void appendField(final StringBuilder builder,
-                             final Row row,
-                             final Column column) {
-        final String columnValue = extractStringValue(row.values[column.columnNum]);
+                             final GridRow row,
+                             final GridColumn column) {
+        final String columnValue = extractStringValue(column.getValue(row));
         if (notNullOrNullAllowed(columnValue) && notEmptyOrEmptyAllowed(columnValue)) {
-            builder.append(column.name).append("=\"");
+            builder.append(column.getName()).append("=\"");
             if (columnValue != null) {
                 builder.append(escapeXmlEntities(columnValue));
             }

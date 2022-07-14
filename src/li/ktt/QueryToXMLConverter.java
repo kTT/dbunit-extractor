@@ -6,6 +6,8 @@ import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.connection.DGDepartment;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
+import com.intellij.database.datagrid.GridColumn;
+import com.intellij.database.datagrid.GridRow;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.database.remote.jdbc.RemoteDatabaseMetaData;
@@ -161,8 +163,8 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
                 }
             }
 
-            final List<Column> columns = constructColumns(metaData);
-            final List<Row> rows = constructRows(metaData, resultSet);
+            final List<GridColumn> columns = constructColumns(metaData);
+            final List<GridRow> rows = constructRows(metaData, resultSet);
             final String tableName = tableNames.iterator().next();
             final String schema = StringUtil.isNotEmpty(metaData.getSchemaName(1))
                     ? metaData.getSchemaName(1)
@@ -263,9 +265,9 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     }
 
     @NotNull
-    private List<Row> constructRows(final RemoteResultSetMetaData metaData,
+    private List<GridRow> constructRows(final RemoteResultSetMetaData metaData,
                                     final RemoteResultSet resultSet) throws SQLException, RemoteException {
-        final List<Row> rows = new LinkedList<>();
+        final List<GridRow> rows = new LinkedList<>();
         int rowNum = 0;
         while (resultSet.next()) {
             List<Object> values = new LinkedList<>();
@@ -279,9 +281,9 @@ public class QueryToXMLConverter extends PsiElementBaseIntentionAction implement
     }
 
     @NotNull
-    private List<Column> constructColumns(final RemoteResultSetMetaData metaData)
+    private List<GridColumn> constructColumns(final RemoteResultSetMetaData metaData)
             throws SQLException, RemoteException {
-        final List<Column> columns = new LinkedList<>();
+        final List<GridColumn> columns = new LinkedList<>();
 
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             columns.add(new Column(i - 1,
