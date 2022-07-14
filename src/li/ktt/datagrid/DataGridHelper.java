@@ -1,10 +1,6 @@
 package li.ktt.datagrid;
 
-import com.intellij.database.datagrid.DataConsumer.Column;
-import com.intellij.database.datagrid.DataConsumer.Row;
-import com.intellij.database.datagrid.DataGrid;
-import com.intellij.database.datagrid.DataGridUtil;
-import com.intellij.database.datagrid.GridModel;
+import com.intellij.database.datagrid.*;
 import com.intellij.database.model.DasTable;
 import com.intellij.database.run.ui.DataAccessType;
 import com.intellij.openapi.util.text.StringUtil;
@@ -22,9 +18,9 @@ public class DataGridHelper implements DataHelper {
 
     private final String tableName;
 
-    private final List<Column> filteredColumns;
+    private final List<GridColumn> filteredColumns;
 
-    private final List<Row> rows;
+    private final List<GridRow> rows;
 
     private final ExcludedColumns excludedColumns;
 
@@ -38,7 +34,7 @@ public class DataGridHelper implements DataHelper {
     }
 
 
-    public DataGridHelper(String schemaName, String tableName, List<Column> filteredColumns, List<Row> rows) {
+    public DataGridHelper(String schemaName, String tableName, List<GridColumn> filteredColumns, List<GridRow> rows) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.excludedColumns = new ExcludedColumns("");
@@ -57,35 +53,35 @@ public class DataGridHelper implements DataHelper {
     }
 
     @Override
-    public List<Column> getFilteredColumns() {
+    public List<GridColumn> getFilteredColumns() {
         return filteredColumns;
     }
 
     @Override
-    public List<Row> getRows() {
+    public List<GridRow> getRows() {
         return rows;
     }
 
     @NotNull
-    private List<Row> getSelectedRows(final DataGrid dataGrid) {
+    private List<GridRow> getSelectedRows(final DataGrid dataGrid) {
         return getDataModel(dataGrid).getRows(dataGrid.getSelectionModel().getSelectedRows());
     }
 
     @NotNull
-    private GridModel<Row, Column> getDataModel(final DataGrid dataGrid) {
+    private GridModel<GridRow, GridColumn> getDataModel(final DataGrid dataGrid) {
         return dataGrid.getDataModel(DataAccessType.DATABASE_DATA);
     }
 
     @NotNull
-    private List<Column> getSelectedColumns(final DataGrid dataGrid) {
+    private List<GridColumn> getSelectedColumns(final DataGrid dataGrid) {
         return getDataModel(dataGrid).getColumns(dataGrid.getSelectionModel().getSelectedColumns());
     }
 
     @Nullable
     private String initTableName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
-        final List<Column> columns = getDataModel(dataGrid).getColumns();
-        String name = columns.isEmpty() ? null : columns.get(0).table;
+        final List<GridColumn> columns = getDataModel(dataGrid).getColumns();
+        String name = columns.isEmpty() || !(columns.get(0) instanceof JdbcGridColumn) ? null : ((JdbcGridColumn) columns.get(0)).getTable();
         if ((name == null || name.isEmpty()) && table != null) {
             return table.getName();
         }
@@ -95,18 +91,18 @@ public class DataGridHelper implements DataHelper {
     @Nullable
     private String initSchemaName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
-        final List<Column> columns = getDataModel(dataGrid).getColumns();
-        String name = columns.isEmpty() ? null : columns.get(0).schema;
+        final List<GridColumn> columns = getDataModel(dataGrid).getColumns();
+        String name = columns.isEmpty() || !(columns.get(0) instanceof JdbcGridColumn) ? null : ((JdbcGridColumn) columns.get(0)).getSchema();
         if (StringUtil.isEmpty(name) && table != null && table.getDasParent() != null) {
             name = table.getDasParent().getName();
         }
         return name;
     }
 
-    private List<Column> initFilteredColumns(final List<Column> allColumns) {
-        List<Column> filtered = new LinkedList<Column>();
-        for (final Column column : allColumns) {
-            if (this.excludedColumns.canBeAdded(this.tableName + "." + column.name)) {
+    private List<GridColumn> initFilteredColumns(final List<GridColumn> allColumns) {
+        List<GridColumn> filtered = new LinkedList<>();
+        for (final GridColumn column : allColumns) {
+            if (this.excludedColumns.canBeAdded(this.tableName + "." + column.getName())) {
                 filtered.add(column);
             }
         }

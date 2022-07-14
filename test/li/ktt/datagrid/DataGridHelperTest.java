@@ -1,11 +1,8 @@
 package li.ktt.datagrid;
 
+import com.intellij.database.datagrid.*;
 import com.intellij.database.datagrid.DataConsumer.Column;
 import com.intellij.database.datagrid.DataConsumer.Row;
-import com.intellij.database.datagrid.DataGrid;
-import com.intellij.database.datagrid.GridModel;
-import com.intellij.database.datagrid.ModelIndexSet;
-import com.intellij.database.datagrid.SelectionModel;
 import com.intellij.database.run.ui.DataAccessType;
 import li.ktt.settings.ExtractorProperties;
 import org.junit.Before;
@@ -28,20 +25,20 @@ public class DataGridHelperTest {
     private DataGrid dataGridMock;
 
     @Mock
-    private SelectionModel<Row, Column> selectionModelMock;
+    private SelectionModel<GridRow, GridColumn> selectionModelMock;
 
     @Mock
-    private ModelIndexSet<Row> selectedRowsMock;
+    private ModelIndexSet<GridRow> selectedRowsMock;
 
     @Mock
-    private ModelIndexSet<Column> selectedColumnsMock;
+    private ModelIndexSet<GridColumn> selectedColumnsMock;
 
     @Mock
-    private GridModel<Row, Column> dataModelMock;
+    private GridModel<GridRow, GridColumn> dataModelMock;
 
-    private final List<Row> sampleRows = new ArrayList<Row>();
+    private final List<GridRow> sampleRows = new ArrayList<>();
 
-    private final List<Column> sampleColumns = new ArrayList<Column>();
+    private final List<GridColumn> sampleColumns = new ArrayList<>();
 
     private final ExtractorProperties defaultProperties = new ExtractorProperties(true, true, true, "", null);
 
@@ -75,7 +72,7 @@ public class DataGridHelperTest {
         DataGridHelper data = new DataGridHelper(defaultProperties, dataGridMock);
 
         // when
-        List<Row> result = data.getRows();
+        List<GridRow> result = data.getRows();
 
         // then
         assertEquals(sampleRows, result);
@@ -87,7 +84,7 @@ public class DataGridHelperTest {
         DataGridHelper data = new DataGridHelper(defaultProperties, dataGridMock);
 
         // then
-        List<Column> result = data.getFilteredColumns();
+        List<GridColumn> result = data.getFilteredColumns();
         assertEquals(sampleColumns, result);
     }
 
@@ -104,7 +101,7 @@ public class DataGridHelperTest {
     @Test
     public void shouldReturnSchemaAndTableNamesFromFirstColumn() {
         // given
-        List<Column> localSampleColumns = new ArrayList<Column>();
+        List<GridColumn> localSampleColumns = new ArrayList<>();
         localSampleColumns.add(new Column(1, "superCol", 1, "type", "String", 1, 2, "catalog", "schema201", "superTable201"));
         localSampleColumns.add(new Column(2, "superCol", 1, "type", "String", 1, 2, "catalog", "schema203", "superTable201"));
         when(dataModelMock.getColumns()).thenReturn(localSampleColumns);
