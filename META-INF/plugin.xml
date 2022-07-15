@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>li.ktt</id>
   <name>DbUnit Extractor</name>
-  <version>1.8</version>
+  <version>1.9</version>
   <vendor email="pawel@ktt.li" url="https://ktt.li">Pawel Mozdzonek</vendor>
 
   <description><![CDATA[
@@ -12,6 +12,7 @@
         <li>Robert Kapala</li>
         <li>Marcus Bauer</li>
         <li>Timo Rohrberg</li>
+        <li>Liudmila Kornilova</li>
       </ul>
       <h4>Source code and documentation</h4>
       <ul>
@@ -23,6 +24,7 @@
 
   <change-notes><![CDATA[
     <ul>
+      <li>1.9 - fixes compatibility with 2022.2</li>
       <li>1.8 - fixes connection issues on latest IntelliJ versions and moves configuration under Tools section</li>
       <li>1.7 - removes deprecated code</li>
       <li>1.6 - makes timestamps as zoned UTC</li>
