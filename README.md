@@ -33,10 +33,6 @@ Change SQL query to XML in-place.
 
 Inspired by [@rakk](https://github.com/rakk) web tool for generating DbUnit XML lines.
 
-# Promo movie
-
-[![DbUnit Extractor plugin for IntelliJ IDEA Ultimate](http://img.youtube.com/vi/YjBO2bImpvY/0.jpg)](http://www.youtube.com/watch?v=YjBO2bImpvY)
-
 # Known issues
 
 * Schema name is empty when using "Copy to clipboard as DbUnit XML".
