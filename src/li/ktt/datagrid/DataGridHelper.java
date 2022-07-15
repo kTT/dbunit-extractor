@@ -1,11 +1,11 @@
 package li.ktt.datagrid;
 
-import com.intellij.database.datagrid.DataConsumer;
 import com.intellij.database.datagrid.DataGrid;
 import com.intellij.database.datagrid.DataGridUtil;
 import com.intellij.database.datagrid.GridColumn;
 import com.intellij.database.datagrid.GridModel;
 import com.intellij.database.datagrid.GridRow;
+import com.intellij.database.datagrid.JdbcGridColumn;
 import com.intellij.database.model.DasTable;
 import com.intellij.database.run.ui.DataAccessType;
 import com.intellij.openapi.util.text.StringUtil;
@@ -86,7 +86,7 @@ public class DataGridHelper implements DataHelper {
     private String initTableName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<GridColumn> columns = getDataModel(dataGrid).getColumns();
-        String name = columns.isEmpty() || !(columns.get(0) instanceof DataConsumer.Column) ? null : ((DataConsumer.Column) columns.get(0)).table;
+        String name = columns.isEmpty() || !(columns.get(0) instanceof JdbcGridColumn) ? null : ((JdbcGridColumn) columns.get(0)).getTable();
         if ((name == null || name.isEmpty()) && table != null) {
             return table.getName();
         }
@@ -97,7 +97,7 @@ public class DataGridHelper implements DataHelper {
     private String initSchemaName(final DataGrid dataGrid) {
         DasTable table = DataGridUtil.getDatabaseTable(dataGrid);
         final List<GridColumn> columns = getDataModel(dataGrid).getColumns();
-        String name = columns.isEmpty() || !(columns.get(0) instanceof DataConsumer.Column) ? null : ((DataConsumer.Column) columns.get(0)).schema;
+        String name = columns.isEmpty() || !(columns.get(0) instanceof JdbcGridColumn) ? null : ((JdbcGridColumn) columns.get(0)).getSchema();
         if (StringUtil.isEmpty(name) && table != null && table.getDasParent() != null) {
             name = table.getDasParent().getName();
         }
